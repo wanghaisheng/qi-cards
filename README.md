@@ -1,37 +1,9 @@
-manually build site with help of websim
+基于中医五行理论设计的创新健康管理应用，提供全面的健康评估和个性化建议
 
 
+通过专业评估问卷，分析您的心、肝、脾、肺、肾五行气的平衡状态，生成个性化健康报告。
 
-this may not perfect but is a start
+将健康评估融入趣味闯关，完成每关任务获取卡牌奖励，边玩边了解自己的健康状况。
 
+每次评估都能获得中医相关卡牌，收集稀有卡牌解锁特殊能力，构建属于你的专属健康图鉴。
 
-## feature 
-
-
-1. auto generate sitemap based on lang subfolder,including .html files
-2. auto check seo requirements avoid google redirection and not index issue
-3. auto submit url to google index use indexnow
-4.pc mobile responsive
-5. seo metadata
-6. google analytic and microsoft clarity
-7. pwa support
-8. keyword research
-   umbrella  trend  kgr spyfu
-10.  user  https://github.com/wanghaisheng/workers-users-cloudflare/tree/main
-
-11.  dev
-    
-https://idx.google.com/applimode-7011803
-
-12. image generation
-
-logo, cover,
-
-14.  blog  text generation  g4f
-
-https://github.com/wanghaisheng/auto-blog-g4f-action
-
-
-15  静态框架自动部署
-
-https://github.com/marketplace/actions/github-pages-action
