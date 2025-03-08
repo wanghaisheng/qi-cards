@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 商店</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .shop-header {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="120" viewBox="0 0 355 120"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="120" rx="20" fill="url(%23a)"/><circle cx="60" cy="60" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="30" r="50" fill="white" opacity="0.05"/><path d="M270 80c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+    }
+    
+    .coin-wrapper {
+      position: relative;
+    }
+    
+    .coin-bounce {
+      animation: coinBounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes coinBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .featured-container {
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeIn 0.8s forwards;
+    }
+    
+    .featured-item {
+      background-color: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      margin-top: 12px;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: slideUp 0.5s ease forwards 0.3s;
+    }
+    
+    .featured-image {
+      height: 120px;
+      background-image: linear-gradient(to right, #5e17eb, #a259ff);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .featured-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff3b30;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 12px;
+      animation: pulse 2s infinite;
+    }
+    
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: white;
+      filter: blur(1px);
+      opacity: 0;
+    }
+    
+    .sparkle:nth-child(1) {
+      top: 20%;
+      left: 10%;
+      animation: sparkleAnim 3s infinite 0s;
+    }
+    
+    .sparkle:nth-child(2) {
+      top: 70%;
+      left: 20%;
+      animation: sparkleAnim 3s infinite 0.5s;
+    }
+    
+    .sparkle:nth-child(3) {
+      top: 30%;
+      left: 80%;
+      animation: sparkleAnim 3s infinite 1s;
+    }
+    
+    .sparkle:nth-child(4) {
+      top: 60%;
+      left: 60%;
+      animation: sparkleAnim 3s infinite 1.5s;
+    }
+    
+    @keyframes sparkleAnim {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(3); opacity: 0.8; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+    
+    .product-item {
+      background-color: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeUp 0.5s forwards;
+    }
+    
+    .product-item:nth-child(1) { animation-delay: 0.4s; }
+    .product-item:nth-child(2) { animation-delay: 0.5s; }
+    .product-item:nth-child(3) { animation-delay: 0.6s; }
+    .product-item:nth-child(4) { animation-delay: 0.7s; }
+    
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      margin-right: 10px;
+      white-space: nowrap;
+    }
+    
+    .tab-btn.active {
+      background-color: #5e17eb;
+      color: white;
+    }
+    
+    .tab-btn:not(.active) {
+      background-color: #f1f5f9;
+      color: #64748b;
+    }
+    
+    .product-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      margin-right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .product-badges {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      background-color: #e84393;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 12px;
+    }
+    
+    .card-product {
+      background-image: linear-gradient(to right, #a55eea, #e84393);
+    }
+    
+    .ticket-product {
+      background-image: linear-gradient(to right, #0984e3, #00b894);
+    }
+    
+    .coin-product {
+      background-image: linear-gradient(to right, #f1c40f, #fdcb6e);
+    }
+    
+    .product-circles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <div class="title">商城</div>
+      <div class="flex items-center">
+        <div class="bg-gray-100 rounded-full p-3 mr-2">
+          <i class="fas fa-search text-gray-600"></i>
+        </div>
+        <div class="bg-gray-100 rounded-full p-3">
+          <i class="fas fa-shopping-cart text-gray-600"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="shop-header">
+      <div>
+        <div class="text-sm opacity-80">我的余额</div>
+        <div class="flex items-center">
+          <div class="coin-wrapper">
+            <i class="fas fa-coins text-yellow-300 mr-2 coin-bounce"></i>
+          </div>
+          <span class="text-2xl font-bold">3,280</span>
+        </div>
+      </div>
+      <button class="bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all">
+        充值
+      </button>
+    </div>
+    
+    <div class="featured-container">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-lg font-bold">限时活动</h3>
+        <span class="text-purple-600 text-sm">查看全部</span>
+      </div>
+      
+      <div class="featured-item">
+        <div class="featured-image">
+          <div class="featured-badge">限时</div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="sparkle"></div>
+          <div class="absolute inset-0">
+            <svg width="100%" height="100%" viewBox="0 0 300 120">
+              <circle cx="50" cy="30" r="20" fill="white" opacity="0.1" />
+              <circle cx="250" cy="90" r="30" fill="white" opacity="0.1" />
+              <circle cx="150" cy="60" r="15" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="z-10 text-center">
+            <div class="text-lg font-bold text-white">限定卡牌礼包</div>
+            <div class="mt-2 px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm text-white">
+              <i class="fas fa-clock mr-1"></i> 剩余2天
+            </div>
+          </div>
+        </div>
+        
+        <div class="featured-content">
+          <div class="flex justify-between items-center mb-2">
+            <div class="font-semibold">传说卡牌礼包</div>
+            <div class="flex items-center text-yellow-500">
+              <i class="fas fa-coins mr-1"></i>
+              <span class="font-bold">1200</span>
+            </div>
+          </div>
+          <div class="text-sm text-gray-600 mb-3">
+            包含1张传说卡牌和3张稀有卡牌
+          </div>
+          <button class="bg-purple-600 text-white py-2 w-full rounded-lg text-sm font-semibold">
+            立即购买
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-buttons">
+      <button class="tab-btn active">全部</button>
+      <button class="tab-btn">卡牌礼包</button>
+      <button class="tab-btn">金币充值</button>
+      <button class="tab-btn">评估券</button>
+      <button class="tab-btn">特权道具</button>
+    </div>
+    
+    <div class="product-list">
+      <div class="product-item">
+        <div class="product-image card-product">
+          <div class="product-badges">热卖</div>
+          <div class="product-circles">
+            <svg width="100%" height="100%" viewBox="0 0 80 80">
+              <circle cx="20" cy="20" r="10" fill="white" opacity="0.1" />
+              <circle cx="60" cy="60" r="15" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          <i class="fas fa-credit-card text-xl"></i>
+        </div>
+        
+        <div class="flex-1">
+          <div class="flex justify-between mb-1">
+            <div class="font-semibold">肝气卡牌礼包</div>
+            <div class="flex items-center text-yellow-500">
+              <i class="fas fa-coins mr-1"></i>
+              <span class="font-bold">580</span>
+            </div>
+          </div>
+          <div class="text-sm text-gray-600 mb-3">
+            包含5张肝系列卡牌，有机会获得稀有卡牌
+          </div>
+          <button class="bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-semibold">
+            购买
+          </button>
+        </div>
+      </div>
+      
+      <div class="product-item">
+        <div class="product-image ticket-product">
+          <div class="product-circles">
+            <svg width="100%" height="100%" viewBox="0 0 80 80">
+              <circle cx="20" cy="20" r="10" fill="white" opacity="0.1" />
+              <circle cx="60" cy="60" r="15" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          <i class="fas fa-ticket-alt text-xl"></i>
+        </div>
+        
+        <div class="flex-1">
+          <div class="flex justify-between mb-1">
+            <div class="font-semibold">评估加速券</div>
+            <div class="flex items-center text-yellow-500">
+              <i class="fas fa-coins mr-1"></i>
+              <span class="font-bold">280</span>
+            </div>
+          </div>
+          <div class="text-sm text-gray-600 mb-3">
+            立即解锁下个评估关卡，无需等待
+          </div>
+          <button class="bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-semibold">
+            购买
+          </button>
+        </div>
+      </div>
+      
+      <div class="product-item">
+        <div class="product-image coin-product">
+          <div class="product-badges">优惠</div>
+          <div class="product-circles">
+            <svg width="100%" height="100%" viewBox="0 0 80 80">
+              <circle cx="20" cy="20" r="10" fill="white" opacity="0.1" />
+              <circle cx="60" cy="60" r="15" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          <i class="fas fa-coins text-xl"></i>
+        </div>
+        
+        <div class="flex-1">
+          <div class="flex justify-between mb-1">
+            <div class="font-semibold">金币礼包 (1000)</div>
+            <div class="flex items-center text-green-500">
+              <span class="font-bold">¥12</span>
+            </div>
+          </div>
+          <div class="text-sm text-gray-600 mb-3">
+            购买1000金币，首充额外赠送300金币
+          </div>
+          <button class="bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-semibold">
+            充值
+          </button>
+        </div>
+      </div>
+      
+      <div class="product-item">
+        <div class="product-image card-product">
+          <div class="product-circles">
+            <svg width="100%" height="100%" viewBox="0 0 80 80">
+              <circle cx="20" cy="20" r="10" fill="white" opacity="0.1" />
+              <circle cx="60" cy="60" r="15" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          <i class="fas fa-heart text-xl"></i>
+        </div>
+        
+        <div class="flex-1">
+          <div class="flex justify-between mb-1">
+            <div class="font-semibold">心气卡牌礼包</div>
+            <div class="flex items-center text-yellow-500">
+              <i class="fas fa-coins mr-1"></i>
+              <span class="font-bold">580</span>
+            </div>
+          </div>
+          <div class="text-sm text-gray-600 mb-3">
+            包含5张心系列卡牌，有机会获得稀有卡牌
+          </div>
+          <button class="bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-semibold">
+            购买
+          </button>
+        </div>
+      </div>
+      
+      <div class="product-item">
+        <div class="product-image card-product" style="background-image: linear-gradient(to right, #5e17eb, #a259ff);">
+          <div class="product-badges">VIP专享</div>
+          <div class="product-circles">
+            <svg width="100%" height="100%" viewBox="0 0 80 80">
+              <circle cx="20" cy="20" r="10" fill="white" opacity="0.1" />
+              <circle cx="60" cy="60" r="15" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          <i class="fas fa-paw text-xl"></i>
+        </div>
+        
+        <div class="flex-1">
+          <div class="flex justify-between mb-1">
+            <div class="font-semibold">稀有熊猫卡牌礼包</div>
+            <div class="flex items-center text-yellow-500">
+              <i class="fas fa-crown mr-1"></i>
+              <span class="font-bold">VIP专享</span>
+            </div>
+          </div>
+          <div class="text-sm text-gray-600 mb-3">
+            包含5张独家熊猫系列卡牌，萌趣与奇特风格各异
+          </div>
+          <button class="bg-purple-600 text-white py-2 px-4 rounded-lg text-sm font-semibold">
+            立即订阅解锁
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tab-bar">
+    <div class="tab-item" onclick="window.location.href='home.html'">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='levels.html'">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='cards.html'">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item active" onclick="window.location.href='shop.html'">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='profile.html'">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

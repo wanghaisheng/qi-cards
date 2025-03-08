@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 我的资产</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .assets-header {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="160" viewBox="0 0 355 160"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="160" rx="20" fill="url(%23a)"/><circle cx="60" cy="70" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="40" r="50" fill="white" opacity="0.05"/><path d="M270 100c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 24px;
+      position: relative;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+    }
+    
+    .coin-pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      margin-right: 10px;
+      white-space: nowrap;
+    }
+    
+    .tab-btn.active {
+      background-color: #5e17eb;
+      color: white;
+    }
+    
+    .tab-btn:not(.active) {
+      background-color: #f1f5f9;
+      color: #64748b;
+    }
+    
+    .asset-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .asset-card:active {
+      transform: scale(0.98);
+    }
+    
+    .asset-card:nth-child(1) { animation-delay: 0.1s; }
+    .asset-card:nth-child(2) { animation-delay: 0.2s; }
+    .asset-card:nth-child(3) { animation-delay: 0.3s; }
+    .asset-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .asset-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-right: 16px;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+    
+    .coin-icon {
+      background: linear-gradient(to right, #f1c40f, #fdcb6e);
+    }
+    
+    .ticket-icon {
+      background: linear-gradient(to right, #0984e3, #00b894);
+    }
+    
+    .fragment-icon {
+      background: linear-gradient(to right, #e84393, #a55eea);
+    }
+    
+    .vip-icon {
+      background: linear-gradient(to right, #5e17eb, #a259ff);
+    }
+    
+    .use-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: #5e17eb;
+      color: white;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .asset-detail-btn {
+      background-color: #f8f5ff;
+      color: #5e17eb;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+    
+    .transaction-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    
+    .in-icon {
+      background-color: #c6f6d5;
+      color: #38a169;
+    }
+    
+    .out-icon {
+      background-color: #fed7d7;
+      color: #e53e3e;
+    }
+    
+    /* Asset detail modal */
+    .asset-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .asset-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal-content {
+      background-color: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 24px;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    
+    .asset-modal.show .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    .modal-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      margin: 0 auto 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="flex items-center mb-6">
+      <a href="profile.html" class="mr-4">
+        <i class="fas fa-arrow-left text-2xl text-gray-600"></i>
+      </a>
+      <h1 class="text-2xl font-bold">我的资产</h1>
+    </div>
+    
+    <div class="assets-header">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <div class="text-sm opacity-80">我的金币</div>
+          <div class="flex items-center">
+            <i class="fas fa-coins text-yellow-300 mr-2 coin-pulse"></i>
+            <span class="text-2xl font-bold">3,280</span>
+          </div>
+        </div>
+        <a href="shop.html" class="bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold shadow-md">
+          充值
+        </a>
+      </div>
+      
+      <a href="subscription.html" class="bg-white bg-opacity-20 border border-white border-opacity-40 rounded-lg p-3 flex items-center justify-between">
+        <div class="flex items-center">
+          <i class="fas fa-crown text-yellow-300 mr-3"></i>
+          <div>
+            <div class="font-medium">VIP会员</div>
+            <div class="text-xs opacity-80">有效期至2024年05月15日</div>
+          </div>
+        </div>
+        <div class="bg-white bg-opacity-30 rounded-full px-3 py-1 text-xs">
+          查看特权
+        </div>
+      </a>
+    </div>
+    
+    <div class="tab-buttons">
+      <button class="tab-btn active">全部</button>
+      <button class="tab-btn">金币</button>
+      <button class="tab-btn">道具</button>
+      <button class="tab-btn">特权</button>
+      <button class="tab-btn">交易记录</button>
+    </div>
+    
+    <div id="assetsList">
+      <div class="asset-card" onclick="showAssetDetail('coins')">
+        <div class="flex items-start">
+          <div class="asset-icon coin-icon">
+            <i class="fas fa-coins"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between mb-1">
+              <div class="font-medium">金币</div>
+              <div class="font-bold">3,280</div>
+            </div>
+            <div class="text-sm text-gray-500 mb-3">
+              可用于购买卡牌和道具
+            </div>
+            <div class="asset-detail-btn">
+              交易记录 <i class="fas fa-chevron-right ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="asset-card" onclick="showAssetDetail('tickets')">
+        <div class="use-badge">使用</div>
+        <div class="flex items-start">
+          <div class="asset-icon ticket-icon">
+            <i class="fas fa-ticket-alt"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between mb-1">
+              <div class="font-medium">评估加速券</div>
+              <div class="font-bold">3</div>
+            </div>
+            <div class="text-sm text-gray-500 mb-3">
+              立即解锁下一个评估关卡，无需等待
+            </div>
+            <div class="asset-detail-btn">
+              查看详情 <i class="fas fa-chevron-right ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="asset-card" onclick="showAssetDetail('fragments')">
+        <div class="flex items-start">
+          <div class="asset-icon fragment-icon">
+            <i class="fas fa-puzzle-piece"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between mb-1">
+              <div class="font-medium">卡牌碎片</div>
+              <div class="font-bold">27/100</div>
+            </div>
+            <div class="text-sm text-gray-500 mb-3">
+              收集100个碎片可兑换一张传说卡牌
+            </div>
+            <div class="progress-bar-container w-full h-2 bg-gray-200 rounded-full mb-3">
+              <div class="h-full bg-purple-600 rounded-full" style="width: 27%"></div>
+            </div>
+            <div class="asset-detail-btn">
+              合成卡牌 <i class="fas fa-chevron-right ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="asset-card" onclick="showAssetDetail('vip')">
+        <div class="flex items-start">
+          <div class="asset-icon vip-icon">
+            <i class="fas fa-crown"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between mb-1">
+              <div class="font-medium">VIP会员</div>
+              <div class="font-bold">182天</div>
+            </div>
+            <div class="text-sm text-gray-500 mb-3">
+              有效期至2024年05月15日
+            </div>
+            <div class="asset-detail-btn">
+              会员特权 <i class="fas fa-chevron-right ml-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="transactionsList" class="hidden">
+      <div class="bg-white rounded-xl p-4 shadow-md mb-6">
+        <h3 class="font-semibold mb-4">近期交易</h3>
+        
+        <div class="transaction-item">
+          <div class="transaction-icon in-icon">
+            <i class="fas fa-plus"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">每日签到奖励</div>
+              <div class="text-green-600 font-semibold">+50</div>
+            </div>
+            <div class="text-xs text-gray-500">今天 08:30</div>
+          </div>
+        </div>
+        
+        <div class="transaction-item">
+          <div class="transaction-icon in-icon">
+            <i class="fas fa-plus"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">完成肝气评估</div>
+              <div class="text-green-600 font-semibold">+200</div>
+            </div>
+            <div class="text-xs text-gray-500">昨天 15:45</div>
+          </div>
+        </div>
+        
+        <div class="transaction-item">
+          <div class="transaction-icon out-icon">
+            <i class="fas fa-minus"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">购买加速券</div>
+              <div class="text-red-600 font-semibold">-280</div>
+            </div>
+            <div class="text-xs text-gray-500">11月14日 10:23</div>
+          </div>
+        </div>
+        
+        <div class="transaction-item">
+          <div class="transaction-icon in-icon">
+            <i class="fas fa-plus"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">连续签到7天奖励</div>
+              <div class="text-green-600 font-semibold">+300</div>
+            </div>
+            <div class="text-xs text-gray-500">11月13日 09:10</div>
+          </div>
+        </div>
+        
+        <div class="transaction-item">
+          <div class="transaction-icon out-icon">
+            <i class="fas fa-minus"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">购买肝气卡牌礼包</div>
+              <div class="text-red-600 font-semibold">-580</div>
+            </div>
+            <div class="text-xs text-gray-500">11月12日 16:35</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="assetModal" class="asset-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-icon" id="modalIcon">
+            <i class="fas fa-coins"></i>
+          </div>
+          <h3 class="text-xl font-bold" id="modalTitle">金币</h3>
+        </div>
+        
+        <div class="modal-body" id="modalBody">
+          <!-- Content will be populated dynamically -->
+        </div>
+        
+        <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold mt-6" id="closeModalBtn">
+          关闭
+        </button>
+      </div>
+    </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab switching functionality
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const assetsList = document.getElementById('assetsList');
+      const transactionsList = document.getElementById('transactionsList');
+      
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Deactivate all tabs
+          tabButtons.forEach(b => b.classList.remove('active'));
+          // Activate clicked tab
+          this.classList.add('active');
+          
+          // Switch content based on tab
+          if (this.textContent === '交易记录') {
+            assetsList.classList.add('hidden');
+            transactionsList.classList.remove('hidden');
+          } else {
+            assetsList.classList.remove('hidden');
+            transactionsList.classList.add('hidden');
+          }
+        });
+      });
+      
+      // Modal functionality
+      const assetModal = document.getElementById('assetModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      
+      closeModalBtn.addEventListener('click', function() {
+        assetModal.classList.remove('show');
+      });
+      
+      assetModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('show');
+        }
+      });
+    });
+    
+    // Function to show asset details
+    function showAssetDetail(assetType) {
+      const modal = document.getElementById('assetModal');
+      const modalIcon = document.getElementById('modalIcon');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
+      
+      // Configure modal based on asset type
+      switch (assetType) {
+        case 'coins':
+          modalIcon.className = 'modal-icon coin-icon';
+          modalIcon.innerHTML = '<i class="fas fa-coins"></i>';
+          modalTitle.textContent = '金币';
+          modalBody.innerHTML = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold">3,280</div>
+              <div class="text-sm text-gray-500">当前金币余额</div>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold mb-2">金币用途</h4>
+              <ul class="text-sm text-gray-600 space-y-2">
+                <li><i class="fas fa-check-circle text-green-500 mr-2"></i>购买卡牌礼包</li>
+                <li><i class="fas fa-check-circle text-green-500 mr-2"></i>获取加速券和道具</li>
+                <li><i class="fas fa-check-circle text-green-500 mr-2"></i>兑换限时稀有卡牌</li>
+              </ul>
+            </div>
+            
+            <h4 class="font-semibold mb-2">获取金币的方式</h4>
+            <ul class="text-sm text-gray-600 space-y-2 mb-4">
+              <li><i class="fas fa-star text-yellow-500 mr-2"></i>完成每日签到 (+50)</li>
+              <li><i class="fas fa-star text-yellow-500 mr-2"></i>完成评估关卡 (+100~300)</li>
+              <li><i class="fas fa-star text-yellow-500 mr-2"></i>连续登录奖励 (最多+500)</li>
+              <li><i class="fas fa-star text-yellow-500 mr-2"></i>邀请好友 (+200/人)</li>
+            </ul>
+            
+            <a href="shop.html" class="block w-full bg-yellow-500 text-white text-center py-3 rounded-lg font-semibold">
+              <i class="fas fa-plus-circle mr-2"></i>获取更多金币
+            </a>
+          `;
+          break;
+          
+        case 'tickets':
+          modalIcon.className = 'modal-icon ticket-icon';
+          modalIcon.innerHTML = '<i class="fas fa-ticket-alt"></i>';
+          modalTitle.textContent = '评估加速券';
+          modalBody.innerHTML = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold">3</div>
+              <div class="text-sm text-gray-500">当前持有数量</div>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold mb-2">道具说明</h4>
+              <p class="text-sm text-gray-600">
+                使用加速券可以立即解锁下一个评估关卡，无需等待冷却时间。
+                针对需要24小时等待时间的高级关卡特别有用。
+              </p>
+            </div>
+            
+            <div class="bg-blue-50 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold mb-2 text-blue-700">使用提示</h4>
+              <p class="text-sm text-blue-700">
+                目前"大便与腹部问题"关卡处于锁定状态，可以使用1张加速券立即解锁。
+              </p>
+            </div>
+            
+            <a href="levels.html" class="block w-full bg-blue-500 text-white text-center py-3 rounded-lg font-semibold mb-4">
+              <i class="fas fa-magic mr-2"></i>立即使用
+            </a>
+            
+            <a href="shop.html" class="block w-full bg-gray-200 text-gray-700 text-center py-3 rounded-lg font-semibold">
+              <i class="fas fa-shopping-cart mr-2"></i>购买更多 (280金币/张)
+            </a>
+          `;
+          break;
+          
+        case 'fragments':
+          modalIcon.className = 'modal-icon fragment-icon';
+          modalIcon.innerHTML = '<i class="fas fa-puzzle-piece"></i>';
+          modalTitle.textContent = '卡牌碎片';
+          modalBody.innerHTML = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold">27/100</div>
+              <div class="text-sm text-gray-500">当前碎片进度</div>
+              <div class="w-full h-3 bg-gray-200 rounded-full mt-2">
+                <div class="h-full bg-purple-600 rounded-full" style="width: 27%"></div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-100 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold mb-2">碎片说明</h4>
+              <p class="text-sm text-gray-600">
+                收集100个卡牌碎片可以合成一张传说级别的卡牌。
+                传说卡牌具有特殊能力，可以提供额外的健康分析和建议。
+              </p>
+            </div>
+            
+            <h4 class="font-semibold mb-2">获取碎片的方式</h4>
+            <ul class="text-sm text-gray-600 space-y-2 mb-4">
+              <li><i class="fas fa-gem text-purple-500 mr-2"></i>完成成就任务</li>
+              <li><i class="fas fa-gem text-purple-500 mr-2"></i>连续登录奖励</li>
+              <li><i class="fas fa-gem text-purple-500 mr-2"></i>高分完成评估关卡</li>
+              <li><i class="fas fa-gem text-purple-500 mr-2"></i>分解多余的卡牌</li>
+            </ul>
+            
+            <button class="block w-full bg-gray-300 text-gray-500 text-center py-3 rounded-lg font-semibold cursor-not-allowed">
+              <i class="fas fa-hammer mr-2"></i>合成卡牌 (需要100碎片)
+            </button>
+          `;
+          break;
+          
+        case 'vip':
+          modalIcon.className = 'modal-icon vip-icon';
+          modalIcon.innerHTML = '<i class="fas fa-crown"></i>';
+          modalTitle.textContent = 'VIP会员';
+          modalBody.innerHTML = `
+            <div class="text-center mb-4">
+              <div class="text-3xl font-bold">182天</div>
+              <div class="text-sm text-gray-500">剩余会员时间</div>
+              <div class="text-sm text-gray-500">有效期至2024年05月15日</div>
+            </div>
+            
+            <div class="bg-purple-50 p-4 rounded-lg mb-4">
+              <h4 class="font-semibold mb-2 text-purple-700">会员特权</h4>
+              <ul class="text-sm text-gray-600 space-y-2">
+                <li><i class="fas fa-check-circle text-purple-600 mr-2"></i>解锁所有高级评估</li>
+                <li><i class="fas fa-check-circle text-purple-600 mr-2"></i>解锁独家熊猫卡牌系列</li>
+                <li><i class="fas fa-check-circle text-purple-600 mr-2"></i>签到金币奖励翻倍</li>
+                <li><i class="fas fa-check-circle text-purple-600 mr-2"></i>关卡冷却时间减半</li>
+                <li><i class="fas fa-check-circle text-purple-600 mr-2"></i>专属会员徽章</li>
+              </ul>
+            </div>
+            
+            <a href="subscription.html" class="block w-full bg-purple-600 text-white text-center py-3 rounded-lg font-semibold">
+              <i class="fas fa-sync-alt mr-2"></i>续费会员
+            </a>
+          `;
+          break;
+      }
+      
+      // Show the modal
+      modal.classList.add('show');
+    }
+  </script>
+  
+  <div class="tab-bar">
+    <div class="tab-item" onclick="window.location.href='home.html'">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='levels.html'">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='cards.html'">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='shop.html'">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item active" onclick="window.location.href='profile.html'">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

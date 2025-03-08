@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 卡牌详情</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .card-detail-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .card-preview-large {
+      background-image: linear-gradient(to right, #ffae42, #ff7730);
+      border-radius: 20px;
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 24px rgba(255, 119, 48, 0.35);
+      margin: 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      transition: transform 0.8s;
+    }
+    
+    .card-3d-effect {
+      transform: perspective(1000px) rotateY(0deg);
+      transition: transform 0.5s ease;
+    }
+    
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .card-back {
+      transform: rotateY(180deg);
+      background-image: linear-gradient(to left, #ffae42, #ff7730);
+    }
+    
+    .flip-card {
+      transform: rotateY(180deg);
+    }
+    
+    .card-circles-large {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    
+    .card-icon-large {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 16px;
+    }
+    
+    .card-name-large {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .card-type-large {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 4px 12px;
+      border-radius: 16px;
+    }
+    
+    .detail-section {
+      background-color: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    
+    .detail-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .detail-icon {
+      width: 36px;
+      height: 36px;
+      background-color: #f8f5ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5e17eb;
+      font-size: 18px;
+      margin-right: 12px;
+    }
+    
+    .attribute-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeUp 0.6s forwards;
+      animation-delay: 0.3s;
+    }
+    
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .attribute-item {
+      display: flex;
+      align-items: center;
+    }
+    
+    .attribute-icon {
+      width: 30px;
+      height: 30px;
+      background-color: #f8f5ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5e17eb;
+      margin-right: 10px;
+    }
+    
+    .combo-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 10px;
+      background-color: #f8f5ff;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateX(-20px);
+      animation: slideInRight 0.5s forwards;
+    }
+    
+    .combo-item:nth-child(1) {
+      animation-delay: 0.4s;
+    }
+    
+    .combo-item:nth-child(2) {
+      animation-delay: 0.6s;
+    }
+    
+    @keyframes slideInRight {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .combo-cards {
+      display: flex;
+      margin-right: 12px;
+    }
+    
+    .combo-card-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background-color: #ffae42;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: -10px;
+      border: 2px solid white;
+    }
+    
+    .combo-card-icon:nth-child(2) {
+      background-color: #a55eea;
+    }
+    
+    .combo-card-icon:nth-child(3) {
+      background-color: #00b894;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cardPreview = document.querySelector('.card-preview-large');
+      
+      cardPreview.addEventListener('click', function() {
+        this.classList.toggle('flip-card');
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <div class="flex items-center mb-4">
+      <a href="#" class="mr-4">
+        <i class="fas fa-arrow-left text-2xl text-gray-600"></i>
+      </a>
+      <h1 class="text-2xl font-bold">卡牌详情</h1>
+    </div>
+    
+    <div class="card-detail-container">
+      <div class="card-preview-large card-3d-effect">
+        <div class="card-front">
+          <div class="card-circles-large">
+            <svg width="100%" height="100%" viewBox="0 0 300 220">
+              <circle cx="80" cy="60" r="30" fill="white" opacity="0.1" />
+              <circle cx="220" cy="50" r="20" fill="white" opacity="0.1" />
+              <circle cx="150" cy="170" r="40" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <svg class="card-icon-large" viewBox="0 0 60 60">
+              <path d="M30 10C44 24 50 30 50 40C50 50 40 55 30 55C20 55 10 50 10 40C10 30 16 24 30 10Z" fill="white" opacity="0.9"/>
+            </svg>
+            <div class="card-name-large">肝郁气滞</div>
+            <div class="card-type-large">稀有</div>
+          </div>
+        </div>
+        <div class="card-back">
+          <div class="text-center text-white p-6">
+            <h3 class="text-xl font-bold mb-2">卡牌故事</h3>
+            <p class="text-sm">此卡牌源于古代中医典籍《黄帝内经》中的理论，表现肝的疏泄功能失调导致气机郁滞，常见于情志不畅之人。</p>
+            <div class="mt-4 text-xs bg-white bg-opacity-20 p-2 rounded-lg">点击卡牌翻转</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <div class="detail-header">
+          <div class="detail-icon">
+            <i class="fas fa-info-circle"></i>
+          </div>
+          <div class="text-lg font-semibold">卡牌介绍</div>
+        </div>
+        
+        <p class="text-gray-600 mb-4">
+          肝郁气滞是中医常见证型，表现为情绪抑郁、烦躁易怒、胸肋胀痛等症状。其形成原因多为情志不舒、肝的疏泄功能失调所致。
+        </p>
+        
+        <p class="text-gray-600">
+          本卡牌收集于"肝气评估"的乳房与肋部问题关卡，属于肝系列稀有卡牌。
+        </p>
+      </div>
+      
+      <div class="detail-section">
+        <div class="detail-header">
+          <div class="detail-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="text-lg font-semibold">卡牌属性</div>
+        </div>
+        
+        <div class="attribute-list">
+          <div class="attribute-item">
+            <div class="attribute-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">稀有度</div>
+              <div class="font-medium">稀有 (4星)</div>
+            </div>
+          </div>
+          
+          <div class="attribute-item">
+            <div class="attribute-icon">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">获得日期</div>
+              <div class="font-medium">2023.05.20</div>
+            </div>
+          </div>
+          
+          <div class="attribute-item">
+            <div class="attribute-icon">
+              <i class="fas fa-tag"></i>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">类别</div>
+              <div class="font-medium">肝系列</div>
+            </div>
+          </div>
+          
+          <div class="attribute-item">
+            <div class="attribute-icon">
+              <i class="fas fa-trophy"></i>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">收集进度</div>
+              <div class="font-medium">4/12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section mb-20">
+        <div class="detail-header">
+          <div class="detail-icon">
+            <i class="fas fa-layer-group"></i>
+          </div>
+          <div class="text-lg font-semibold">卡牌组合</div>
+        </div>
+        
+        <div class="combo-item">
+          <div class="combo-cards">
+            <div class="combo-card-icon">
+              <i class="fas fa-leaf text-white text-xs"></i>
+            </div>
+            <div class="combo-card-icon">
+              <i class="fas fa-heart text-white text-xs"></i>
+            </div>
+            <div class="combo-card-icon">
+              <i class="fas fa-fire text-white text-xs"></i>
+            </div>
+          </div>
+          <div>
+            <div class="font-medium text-sm">肝气调和</div>
+            <div class="text-xs text-gray-500">收集全部肝系列卡牌解锁</div>
+          </div>
+        </div>
+        
+        <div class="combo-item">
+          <div class="combo-cards">
+            <div class="combo-card-icon">
+              <i class="fas fa-leaf text-white text-xs"></i>
+            </div>
+            <div class="combo-card-icon">
+              <i class="fas fa-heart text-white text-xs"></i>
+            </div>
+          </div>
+          <div>
+            <div class="font-medium text-sm">阴阳平衡</div>
+            <div class="text-xs text-gray-500">收集3张肝系列+2张心系列</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tab-bar">
+    <div class="tab-item">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item active">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

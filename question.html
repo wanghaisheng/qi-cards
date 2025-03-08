@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 答题页</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .question-container {
+      height: calc(100% - 180px);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .question-progress {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .progress-pill {
+      width: 30px;
+      height: 8px;
+      background-color: #e2e8f0;
+      border-radius: 4px;
+      transition: all 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-pill.active {
+      background-color: #5e17eb;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+    
+    .progress-pill.complete {
+      background-color: #48bb78;
+    }
+    
+    .question-card {
+      background-color: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards;
+    }
+    
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .option-item {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateX(-20px);
+      animation: slideIn 0.5s forwards;
+    }
+    
+    .option-item:nth-child(1) { animation-delay: 0.1s; }
+    .option-item:nth-child(2) { animation-delay: 0.2s; }
+    .option-item:nth-child(3) { animation-delay: 0.3s; }
+    .option-item:nth-child(4) { animation-delay: 0.4s; }
+    
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .option-item:hover {
+      background-color: #f8f5ff;
+      border-color: #5e17eb20;
+    }
+    
+    .option-item.selected {
+      border-color: #5e17eb;
+      background-color: #f8f5ff;
+      box-shadow: 0 2px 8px rgba(94, 23, 235, 0.15);
+    }
+    
+    .character-animation {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    .character {
+      width: 120px;
+      height: 120px;
+      animation: bounce 2s ease infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .question-header {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .question-number {
+      background-color: #5e17eb;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    
+    .question-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a202c;
+    }
+    
+    .option-marker {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #e2e8f0;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .option-item.selected .option-marker {
+      background-color: #5e17eb;
+      border-color: #5e17eb;
+    }
+    
+    .footer-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const options = document.querySelectorAll('.option-item');
+      
+      options.forEach(option => {
+        option.addEventListener('click', () => {
+          // Remove selected class from all options
+          options.forEach(o => o.classList.remove('selected'));
+          // Add selected class to clicked option
+          option.classList.add('selected');
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <div class="flex items-center justify-between mb-6">
+      <a href="#" class="flex items-center">
+        <i class="fas fa-arrow-left text-2xl text-gray-600 mr-2"></i>
+        <span class="text-lg font-medium">乳房与肋部问题</span>
+      </a>
+      <div class="flex items-center">
+        <div class="mr-2 flex items-center">
+          <i class="fas fa-star text-yellow-500 mr-1"></i>
+          <span class="font-semibold">27</span>
+        </div>
+        <div class="bg-gray-100 rounded-full p-2">
+          <i class="fas fa-pause text-gray-600"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="question-progress">
+      <div class="progress-pill complete"></div>
+      <div class="progress-pill complete"></div>
+      <div class="progress-pill active"></div>
+      <div class="progress-pill"></div>
+      <div class="progress-pill"></div>
+      <div class="progress-pill"></div>
+      <div class="progress-pill"></div>
+      <div class="progress-pill"></div>
+      <div class="progress-pill"></div>
+      <div class="progress-pill"></div>
+    </div>
+    
+    <div class="question-container">
+      <div class="character-animation">
+        <svg class="character" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="60" cy="60" rx="40" ry="45" fill="black"/>
+          <ellipse cx="60" cy="65" rx="35" ry="40" fill="white"/>
+          <circle cx="45" cy="50" r="15" fill="black"/>
+          <circle cx="75" cy="50" r="15" fill="black"/>
+          <circle cx="45" cy="48" r="5" fill="white"/>
+          <circle cx="75" cy="48" r="5" fill="white"/>
+          <path d="M50 75 Q60 80 70 75" stroke="black" stroke-width="3" fill="none"/>
+          <ellipse cx="30" cy="35" rx="15" ry="10" fill="black"/>
+          <ellipse cx="90" cy="35" rx="15" ry="10" fill="black"/>
+          <ellipse cx="60" cy="90" rx="15" ry="10" fill="#ffae42" opacity="0.5"/>
+        </svg>
+      </div>
+      
+      <div class="question-card">
+        <div class="question-header">
+          <div class="question-number">3</div>
+          <div class="question-title">您是否经常感到肋部胀痛？</div>
+        </div>
+        
+        <div class="options-container">
+          <div class="option-item selected">
+            <div class="option-marker">A</div>
+            <div class="option-text">从不，我的肋部很少有不适感</div>
+          </div>
+          
+          <div class="option-item">
+            <div class="option-marker">B</div>
+            <div class="option-text">偶尔，尤其是压力大的时候</div>
+          </div>
+          
+          <div class="option-item">
+            <div class="option-marker">C</div>
+            <div class="option-text">经常，特别是晚上睡觉前</div>
+          </div>
+          
+          <div class="option-item">
+            <div class="option-marker">D</div>
+            <div class="option-text">总是，几乎每天都有肋部胀痛感</div>
+          </div>
+        </div>
+        
+        <div class="footer-buttons">
+          <button class="px-5 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold" onclick="window.location.href='question.html'">
+            <i class="fas fa-chevron-left mr-2"></i>上一题
+          </button>
+          <button class="px-5 py-3 bg-purple-600 text-white rounded-lg font-semibold" onclick="window.location.href='results.html'">
+            下一题<i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

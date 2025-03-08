@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 健康日志</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .health-log-header {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="120" viewBox="0 0 355 120"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="120" rx="20" fill="url(%23a)"/><circle cx="60" cy="60" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="30" r="50" fill="white" opacity="0.05"/><path d="M270 80c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+    }
+    
+    .daily-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+    }
+    
+    .daily-card:nth-child(1) { animation-delay: 0.1s; }
+    .daily-card:nth-child(2) { animation-delay: 0.2s; }
+    .daily-card:nth-child(3) { animation-delay: 0.3s; }
+    .daily-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .date-pill {
+      background-color: #f8f5ff;
+      color: #5e17eb;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    
+    .health-tag {
+      background-color: #f1f5f9;
+      color: #64748b;
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 12px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+    
+    .health-tag.active {
+      background-color: #5e17eb;
+      color: white;
+    }
+    
+    .mood-indicator {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    .mood-great {
+      background-color: #c6f6d5;
+      color: #38a169;
+    }
+    
+    .mood-good {
+      background-color: #e9f6fd;
+      color: #4299e1;
+    }
+    
+    .mood-okay {
+      background-color: #fefcbf;
+      color: #d69e2e;
+    }
+    
+    .mood-bad {
+      background-color: #fed7d7;
+      color: #e53e3e;
+    }
+    
+    .add-log-btn {
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #5e17eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(94, 23, 235, 0.3);
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+    
+    .add-log-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 8px rgba(94, 23, 235, 0.3);
+    }
+    
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .calendar-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .calendar-header-cell {
+      text-align: center;
+      font-size: 12px;
+      color: #718096;
+    }
+    
+    .calendar-day {
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      position: relative;
+    }
+    
+    .calendar-day.other-month {
+      color: #CBD5E0;
+    }
+    
+    .calendar-day.has-log {
+      background-color: #f8f5ff;
+      color: #5e17eb;
+      font-weight: 600;
+    }
+    
+    .calendar-day.today {
+      color: white;
+      font-weight: 600;
+      background-color: #5e17eb;
+    }
+    
+    .calendar-day.selected {
+      border: 2px solid #5e17eb;
+    }
+    
+    /* Log modal styles */
+    .log-modal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+      z-index: 20;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .log-modal.show {
+      transform: translateY(0);
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 15;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .mood-selector {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .mood-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+    }
+    
+    .mood-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 8px;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .mood-option.selected .mood-icon {
+      border-color: #5e17eb;
+      transform: scale(1.1);
+    }
+    
+    .tag-selector {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    
+    .tag-option {
+      background-color: #f1f5f9;
+      color: #64748b;
+      border-radius: 16px;
+      padding: 6px 12px;
+      font-size: 14px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .tag-option.selected {
+      background-color: #5e17eb;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="flex items-center mb-6">
+      <a href="profile.html" class="mr-4">
+        <i class="fas fa-arrow-left text-2xl text-gray-600"></i>
+      </a>
+      <h1 class="text-2xl font-bold">健康日志</h1>
+    </div>
+    
+    <div class="health-log-header">
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <div class="text-sm opacity-80">本月记录</div>
+          <div class="text-3xl font-bold">12</div>
+        </div>
+        <div>
+          <div class="text-sm opacity-80">连续记录</div>
+          <div class="font-semibold">5天</div>
+        </div>
+      </div>
+      <div class="text-sm opacity-90">
+        <i class="fas fa-info-circle mr-1"></i>
+        每日记录健康状态，更好地了解自己
+      </div>
+    </div>
+    
+    <!-- Calendar Section -->
+    <div class="bg-white rounded-xl p-4 shadow-md mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold">2023年11月</h3>
+        <div class="flex">
+          <button class="p-2">
+            <i class="fas fa-chevron-left text-gray-500"></i>
+          </button>
+          <button class="p-2">
+            <i class="fas fa-chevron-right text-gray-500"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="calendar-header">
+        <div class="calendar-header-cell">日</div>
+        <div class="calendar-header-cell">一</div>
+        <div class="calendar-header-cell">二</div>
+        <div class="calendar-header-cell">三</div>
+        <div class="calendar-header-cell">四</div>
+        <div class="calendar-header-cell">五</div>
+        <div class="calendar-header-cell">六</div>
+      </div>
+      
+      <div class="calendar">
+        <div class="calendar-day other-month">29</div>
+        <div class="calendar-day other-month">30</div>
+        <div class="calendar-day other-month">31</div>
+        <div class="calendar-day">1</div>
+        <div class="calendar-day">2</div>
+        <div class="calendar-day">3</div>
+        <div class="calendar-day">4</div>
+        
+        <div class="calendar-day">5</div>
+        <div class="calendar-day">6</div>
+        <div class="calendar-day">7</div>
+        <div class="calendar-day has-log">8</div>
+        <div class="calendar-day has-log">9</div>
+        <div class="calendar-day has-log">10</div>
+        <div class="calendar-day has-log">11</div>
+        
+        <div class="calendar-day has-log">12</div>
+        <div class="calendar-day has-log">13</div>
+        <div class="calendar-day has-log">14</div>
+        <div class="calendar-day has-log">15</div>
+        <div class="calendar-day today selected">16</div>
+        <div class="calendar-day">17</div>
+        <div class="calendar-day">18</div>
+        
+        <div class="calendar-day">19</div>
+        <div class="calendar-day">20</div>
+        <div class="calendar-day">21</div>
+        <div class="calendar-day">22</div>
+        <div class="calendar-day">23</div>
+        <div class="calendar-day">24</div>
+        <div class="calendar-day">25</div>
+        
+        <div class="calendar-day">26</div>
+        <div class="calendar-day">27</div>
+        <div class="calendar-day">28</div>
+        <div class="calendar-day">29</div>
+        <div class="calendar-day">30</div>
+        <div class="calendar-day other-month">1</div>
+        <div class="calendar-day other-month">2</div>
+      </div>
+    </div>
+    
+    <!-- Daily Logs -->
+    <h3 class="font-semibold mb-4">今日记录</h3>
+    <div class="daily-card">
+      <div class="date-pill">
+        <i class="fas fa-calendar-day mr-1"></i> 今天 08:30
+      </div>
+      <div class="flex mb-3">
+        <div class="mood-indicator mood-great">
+          <i class="fas fa-smile"></i>
+        </div>
+        <div class="font-medium">今天感觉精力充沛</div>
+      </div>
+      <div class="mb-3">
+        <span class="health-tag active">睡眠良好</span>
+        <span class="health-tag active">胃口好</span>
+        <span class="health-tag active">精力充沛</span>
+      </div>
+      <p class="text-sm text-gray-600">
+        昨晚睡得特别好，早上起来感觉很轻松。今天肝气评估得分提高了，应该是最近的调理起了作用。
+      </p>
+    </div>
+    
+    <h3 class="font-semibold mb-4">历史记录</h3>
+    <div class="daily-card">
+      <div class="date-pill">
+        <i class="fas fa-calendar-day mr-1"></i> 昨天 21:15
+      </div>
+      <div class="flex mb-3">
+        <div class="mood-indicator mood-good">
+          <i class="fas fa-smile"></i>
+        </div>
+        <div class="font-medium">状态良好</div>
+      </div>
+      <div class="mb-3">
+        <span class="health-tag active">胃口好</span>
+        <span class="health-tag active">心情愉快</span>
+        <span class="health-tag">轻微疲劳</span>
+      </div>
+      <p class="text-sm text-gray-600">
+        工作有点忙，但心情不错。晚饭后做了20分钟的瑜伽，感觉很放松。
+      </p>
+    </div>
+    
+    <div class="daily-card">
+      <div class="date-pill">
+        <i class="fas fa-calendar-day mr-1"></i> 11月14日 19:40
+      </div>
+      <div class="flex mb-3">
+        <div class="mood-indicator mood-okay">
+          <i class="fas fa-meh"></i>
+        </div>
+        <div class="font-medium">一般</div>
+      </div>
+      <div class="mb-3">
+        <span class="health-tag">睡眠不足</span>
+        <span class="health-tag active">胃口正常</span>
+        <span class="health-tag active">有点焦虑</span>
+      </div>
+      <p class="text-sm text-gray-600">
+        昨晚加班到很晚，今天有点疲惫。中午吃了建议的清淡饮食，感觉胃部舒服了一些。
+      </p>
+    </div>
+    
+    <div class="daily-card">
+      <div class="date-pill">
+        <i class="fas fa-calendar-day mr-1"></i> 11月13日 22:10
+      </div>
+      <div class="flex mb-3">
+        <div class="mood-indicator mood-bad">
+          <i class="fas fa-frown"></i>
+        </div>
+        <div class="font-medium">不太好</div>
+      </div>
+      <div class="mb-3">
+        <span class="health-tag active">胃部不适</span>
+        <span class="health-tag active">头晕</span>
+        <span class="health-tag">食欲不振</span>
+      </div>
+      <p class="text-sm text-gray-600">
+        可能是吃了不干净的食物，胃部有些不适。按照APP推荐喝了一些生姜水，感觉稍微好一点。
+      </p>
+    </div>
+    
+    <!-- Add Log Button -->
+    <button class="add-log-btn" id="addLogBtn">
+      <i class="fas fa-plus"></i>
+    </button>
+    
+    <!-- Log Modal -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="log-modal" id="logModal">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">添加今日记录</h3>
+        <button id="closeModalBtn">
+          <i class="fas fa-times text-gray-500 text-xl"></i>
+        </button>
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">今天感觉如何？</label>
+        <div class="mood-selector">
+          <div class="mood-option selected">
+            <div class="mood-icon mood-great">
+              <i class="fas fa-grin-stars"></i>
+            </div>
+            <span class="text-xs">很好</span>
+          </div>
+          <div class="mood-option">
+            <div class="mood-icon mood-good">
+              <i class="fas fa-smile"></i>
+            </div>
+            <span class="text-xs">不错</span>
+          </div>
+          <div class="mood-option">
+            <div class="mood-icon mood-okay">
+              <i class="fas fa-meh"></i>
+            </div>
+            <span class="text-xs">一般</span>
+          </div>
+          <div class="mood-option">
+            <div class="mood-icon mood-bad">
+              <i class="fas fa-frown"></i>
+            </div>
+            <span class="text-xs">不太好</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">选择标签：</label>
+        <div class="tag-selector">
+          <div class="tag-option selected">睡眠良好</div>
+          <div class="tag-option">睡眠不足</div>
+          <div class="tag-option">胃口好</div>
+          <div class="tag-option">胃口差</div>
+          <div class="tag-option selected">精力充沛</div>
+          <div class="tag-option">疲惫</div>
+          <div class="tag-option">心情愉快</div>
+          <div class="tag-option">情绪低落</div>
+          <div class="tag-option">身体不适</div>
+        </div>
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-2">记录详情：</label>
+        <textarea class="w-full border border-gray-300 rounded-lg p-3 h-24" placeholder="记录一下今天的感受...">昨晚睡得特别好，早上起来感觉很轻松。今天肝气评估得分提高了，应该是最近的调理起了作用。</textarea>
+      </div>
+      
+      <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold">
+        保存记录
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Calendar day selection
+      const calendarDays = document.querySelectorAll('.calendar-day');
+      calendarDays.forEach(day => {
+        if (!day.classList.contains('other-month')) {
+          day.addEventListener('click', function() {
+            // Remove selected class from all days
+            calendarDays.forEach(d => d.classList.remove('selected'));
+            // Add selected class to clicked day
+            this.classList.add('selected');
+          });
+        }
+      });
+      
+      // Modal functionality
+      const addLogBtn = document.getElementById('addLogBtn');
+      const logModal = document.getElementById('logModal');
+      const modalOverlay = document.getElementById('modalOverlay');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      
+      addLogBtn.addEventListener('click', function() {
+        logModal.classList.add('show');
+        modalOverlay.classList.add('show');
+      });
+      
+      function closeModal() {
+        logModal.classList.remove('show');
+        modalOverlay.classList.remove('show');
+      }
+      
+      closeModalBtn.addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', closeModal);
+      
+      // Mood selection in modal
+      const moodOptions = document.querySelectorAll('.mood-option');
+      moodOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          moodOptions.forEach(o => o.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+      
+      // Tag selection in modal
+      const tagOptions = document.querySelectorAll('.tag-option');
+      tagOptions.forEach(tag => {
+        tag.addEventListener('click', function() {
+          this.classList.toggle('selected');
+        });
+      });
+    });
+  </script>
+  
+  <div class="tab-bar">
+    <div class="tab-item" onclick="window.location.href='home.html'">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='levels.html'">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='cards.html'">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='shop.html'">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item active" onclick="window.location.href='profile.html'">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

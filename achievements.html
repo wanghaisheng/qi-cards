@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 成就中心</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .achievements-header {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="130" viewBox="0 0 355 130"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="130" rx="20" fill="url(%23a)"/><circle cx="60" cy="60" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="30" r="50" fill="white" opacity="0.05"/><path d="M270 80c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+    }
+    
+    .progress-ring {
+      width: 60px;
+      height: 60px;
+      transform: rotate(-90deg);
+    }
+    
+    .ring-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 6;
+    }
+    
+    .ring-progress {
+      fill: none;
+      stroke: white;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 150;
+      stroke-dashoffset: 90;
+      animation: dashOffset 1.5s ease;
+    }
+    
+    @keyframes dashOffset {
+      from { stroke-dashoffset: 150; }
+      to { stroke-dashoffset: 90; }
+    }
+    
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      margin-right: 10px;
+      white-space: nowrap;
+    }
+    
+    .tab-btn.active {
+      background-color: #5e17eb;
+      color: white;
+    }
+    
+    .tab-btn:not(.active) {
+      background-color: #f1f5f9;
+      color: #64748b;
+    }
+    
+    .achievement-item {
+      background-color: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .achievement-item:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .achievement-item:nth-child(1) { animation-delay: 0.1s; }
+    .achievement-item:nth-child(2) { animation-delay: 0.2s; }
+    .achievement-item:nth-child(3) { animation-delay: 0.3s; }
+    .achievement-item:nth-child(4) { animation-delay: 0.4s; }
+    .achievement-item:nth-child(5) { animation-delay: 0.5s; }
+    .achievement-item:nth-child(6) { animation-delay: 0.6s; }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .achievement-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-right: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .badge-basic {
+      background: linear-gradient(135deg, #a8a8a8, #d1d1d1);
+    }
+    
+    .badge-bronze {
+      background: linear-gradient(135deg, #CD7F32, #e8ae7c);
+    }
+    
+    .badge-silver {
+      background: linear-gradient(135deg, #C0C0C0, #e6e6e6);
+    }
+    
+    .badge-gold {
+      background: linear-gradient(135deg, #FFD700, #ffecad);
+    }
+    
+    .badge-purple {
+      background: linear-gradient(135deg, #5e17eb, #a259ff);
+    }
+    
+    .achievement-locked {
+      filter: grayscale(1);
+      opacity: 0.6;
+    }
+    
+    .progress-bar-container {
+      height: 6px;
+      background-color: #f1f5f9;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      border-radius: 3px;
+      background-color: #5e17eb;
+      transition: width 1s ease;
+    }
+    
+    .reward-container {
+      background-color: #f8f5ff;
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .reward-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: rgba(94, 23, 235, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5e17eb;
+      margin-right: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="flex items-center mb-6">
+      <a href="profile.html" class="mr-4">
+        <i class="fas fa-arrow-left text-2xl text-gray-600"></i>
+      </a>
+      <h1 class="text-2xl font-bold">成就中心</h1>
+    </div>
+    
+    <div class="achievements-header">
+      <div class="flex items-center">
+        <svg class="progress-ring" viewBox="0 0 60 60">
+          <circle class="ring-bg" cx="30" cy="30" r="24" />
+          <circle class="ring-progress" cx="30" cy="30" r="24" />
+        </svg>
+        
+        <div class="ml-4">
+          <div class="text-sm opacity-80">成就进度</div>
+          <div class="text-xl font-bold">12/30</div>
+          <div class="text-xs opacity-80">再解锁3个成就获得稀有卡牌</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-buttons">
+      <button class="tab-btn active">全部</button>
+      <button class="tab-btn">气血</button>
+      <button class="tab-btn">收集</button>
+      <button class="tab-btn">探索</button>
+      <button class="tab-btn">社交</button>
+      <button class="tab-btn">稀有</button>
+    </div>
+    
+    <div class="achievement-list">
+      <div class="achievement-item" onclick="showAchievementDetails(this, 'liver-explorer')">
+        <div class="flex">
+          <div class="achievement-icon badge-bronze">
+            <i class="fas fa-award"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">肝气血探索者</div>
+              <div class="text-sm text-green-600 font-semibold">已完成</div>
+            </div>
+            <div class="text-sm text-gray-500 mt-1">完成肝气血评估的2个关卡</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 100%"></div>
+            </div>
+            <div class="reward-container">
+              <div class="reward-icon">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="text-sm text-purple-700">
+                奖励: 200金币
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="achievement-item" onclick="showAchievementDetails(this, 'medical-apprentice')">
+        <div class="flex">
+          <div class="achievement-icon badge-bronze">
+            <i class="fas fa-book-medical"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">初级中医学徒</div>
+              <div class="text-sm text-green-600 font-semibold">已完成</div>
+            </div>
+            <div class="text-sm text-gray-500 mt-1">收集10张不同系列的卡牌</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 100%"></div>
+            </div>
+            <div class="reward-container">
+              <div class="reward-icon">
+                <i class="fas fa-ticket-alt"></i>
+              </div>
+              <div class="text-sm text-purple-700">
+                奖励: 加速券 x1
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="achievement-item" onclick="showAchievementDetails(this, 'streak-master')">
+        <div class="flex">
+          <div class="achievement-icon badge-silver">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">连续打卡大师</div>
+              <div class="text-sm text-green-600 font-semibold">已完成</div>
+            </div>
+            <div class="text-sm text-gray-500 mt-1">连续打卡7天</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 100%"></div>
+            </div>
+            <div class="reward-container">
+              <div class="reward-icon">
+                <i class="fas fa-gem"></i>
+              </div>
+              <div class="text-sm text-purple-700">
+                奖励: 稀有卡牌碎片 x10
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="achievement-item" onclick="showAchievementDetails(this, 'five-elements')">
+        <div class="flex">
+          <div class="achievement-icon badge-silver">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium">五行初探</div>
+              <div class="text-sm text-purple-600 font-semibold">进行中</div>
+            </div>
+            <div class="text-sm text-gray-500 mt-1">完成所有五行评估项目</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 80%"></div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">
+              已完成 4/5
+            </div>
+            <div class="reward-container">
+              <div class="reward-icon">
+                <i class="fas fa-crown"></i>
+              </div>
+              <div class="text-sm text-purple-700">
+                奖励: 心肝脾肺肾组合徽章
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="achievement-item achievement-locked" onclick="showAchievementDetails(this, 'medical-elite')">
+        <div class="flex">
+          <div class="achievement-icon badge-gold">
+            <i class="fas fa-medal"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium text-gray-500">中医精英</div>
+              <div class="text-sm text-gray-500">未达成</div>
+            </div>
+            <div class="text-sm text-gray-500 mt-1">完成所有评估关卡</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 40%"></div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">
+              已完成 8/20
+            </div>
+            <div class="reward-container">
+              <div class="reward-icon">
+                <i class="fas fa-scroll"></i>
+              </div>
+              <div class="text-sm text-purple-700">
+                奖励: 传说卡牌 x1
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="achievement-item achievement-locked" onclick="showAchievementDetails(this, 'collection-master')">
+        <div class="flex">
+          <div class="achievement-icon badge-purple">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <div class="font-medium text-gray-500">收藏大师</div>
+              <div class="text-sm text-gray-500">未达成</div>
+            </div>
+            <div class="text-sm text-gray-500 mt-1">收集所有系列的卡牌</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width: 30%"></div>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">
+              已收集 16/36
+            </div>
+            <div class="reward-container">
+              <div class="reward-icon">
+                <i class="fas fa-hat-wizard"></i>
+              </div>
+              <div class="text-sm text-purple-700">
+                奖励: 专属称号"中医大师"
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Achievement Detail Modal -->
+    <div id="achievementModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4">
+        <div id="modalContent" class="text-center">
+          <!-- Content will be inserted dynamically -->
+        </div>
+        <button id="closeModal" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold mt-4">
+          关闭
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Tab switching functionality
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Deactivate all tabs
+          tabButtons.forEach(b => b.classList.remove('active'));
+          // Activate clicked tab
+          this.classList.add('active');
+          
+          // Filter achievements based on category (would be implemented in a real app)
+        });
+      });
+      
+      // Close modal when clicking the close button
+      document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('achievementModal').classList.add('hidden');
+      });
+      
+      // Close modal when clicking outside the modal content
+      document.getElementById('achievementModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.add('hidden');
+        }
+      });
+    });
+    
+    // Function to show achievement details
+    function showAchievementDetails(element, achievementId) {
+      const modal = document.getElementById('achievementModal');
+      const modalContent = document.getElementById('modalContent');
+      
+      // Check if achievement is locked
+      const isLocked = element.classList.contains('achievement-locked');
+      
+      // Get achievement data (in a real app, this would come from a database)
+      let achievementData = {
+        'liver-explorer': {
+          title: '肝气血探索者',
+          description: '您成功完成了肝气评估的两个关卡，对肝气的运行有了初步的了解。',
+          icon: 'fas fa-award',
+          iconClass: 'badge-bronze',
+          reward: '200金币',
+          rewardIcon: 'fas fa-coins',
+          unlockDate: '2023年11月10日'
+        },
+        'medical-apprentice': {
+          title: '初级中医学徒',
+          description: '收集了10张不同系列的卡牌，开始了解中医理论的多样性。',
+          icon: 'fas fa-book-medical',
+          iconClass: 'badge-bronze',
+          reward: '加速券 x1',
+          rewardIcon: 'fas fa-ticket-alt',
+          unlockDate: '2023年11月12日'
+        },
+        'streak-master': {
+          title: '连续打卡大师',
+          description: '连续7天使用应用，展现了您对健康管理的坚持与决心。',
+          icon: 'fas fa-calendar-check',
+          iconClass: 'badge-silver',
+          reward: '稀有卡牌碎片 x10',
+          rewardIcon: 'fas fa-gem',
+          unlockDate: '2023年11月14日'
+        },
+        'five-elements': {
+          title: '五行初探',
+          description: '探索五行相生相克的奥秘，了解自身的五行平衡状态。',
+          icon: 'fas fa-star',
+          iconClass: 'badge-silver',
+          reward: '心肝脾肺肾组合徽章',
+          rewardIcon: 'fas fa-crown',
+          progress: '4/5',
+          requirements: '完成肝、心、脾、肺、肾五种评估'
+        },
+        'medical-elite': {
+          title: '中医精英',
+          description: '完成所有评估关卡，全面掌握中医理论知识。',
+          icon: 'fas fa-medal',
+          iconClass: 'badge-gold',
+          reward: '传说卡牌 x1',
+          rewardIcon: 'fas fa-scroll',
+          progress: '8/20',
+          requirements: '完成所有20个评估关卡'
+        },
+        'collection-master': {
+          title: '收藏大师',
+          description: '收集了所有系列的卡牌，成为真正的中医知识收藏家。',
+          icon: 'fas fa-trophy',
+          iconClass: 'badge-purple',
+          reward: '专属称号"中医大师"',
+          rewardIcon: 'fas fa-hat-wizard',
+          progress: '16/36',
+          requirements: '收集全部36张卡牌'
+        }
+      };
+      
+      let data = achievementData[achievementId];
+      
+      // Create modal content based on whether achievement is locked or unlocked
+      if (isLocked) {
+        modalContent.innerHTML = `
+          <div class="achievement-icon ${data.iconClass} mx-auto mb-4">
+            <i class="${data.icon}"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">${data.title}</h3>
+          <p class="text-gray-600 mb-4">${data.description}</p>
+          <div class="bg-gray-100 p-4 rounded-lg mb-4">
+            <h4 class="font-semibold mb-2">完成条件</h4>
+            <p class="text-gray-600">${data.requirements}</p>
+            <div class="mt-3">
+              <div class="text-sm text-gray-500 mb-1">进度: ${data.progress}</div>
+              <div class="progress-bar-container">
+                <div class="progress-bar" style="width: ${parseInt(data.progress.split('/')[0]) / parseInt(data.progress.split('/')[1]) * 100}%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-purple-100 p-4 rounded-lg">
+            <h4 class="font-semibold mb-2">解锁奖励</h4>
+            <div class="flex items-center justify-center">
+              <div class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-600 mr-2">
+                <i class="${data.rewardIcon}"></i>
+              </div>
+              <span>${data.reward}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        modalContent.innerHTML = `
+          <div class="achievement-icon ${data.iconClass} mx-auto mb-4">
+            <i class="${data.icon}"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">${data.title}</h3>
+          <p class="text-gray-600 mb-4">${data.description}</p>
+          <div class="bg-green-100 p-4 rounded-lg mb-4">
+            <h4 class="font-semibold mb-2 text-green-700">已解锁</h4>
+            <p class="text-green-700">解锁日期: ${data.unlockDate || '正在进行中'}</p>
+          </div>
+          <div class="bg-purple-100 p-4 rounded-lg">
+            <h4 class="font-semibold mb-2">获得奖励</h4>
+            <div class="flex items-center justify-center">
+              <div class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-600 mr-2">
+                <i class="${data.rewardIcon}"></i>
+              </div>
+              <span>${data.reward}</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Show the modal
+      modal.classList.remove('hidden');
+    }
+  </script>
+  
+  <div class="tab-bar">
+    <div class="tab-item" onclick="window.location.href='home.html'">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='levels.html'">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='cards.html'">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='shop.html'">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item active" onclick="window.location.href='profile.html'">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

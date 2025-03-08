@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 高级订阅</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .subscription-container {
+      padding: 20px;
+      height: 100%;
+      background-color: #f8f5ff;
+      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #5e17eb;
+    }
+    
+    .subscription-banner {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="180" viewBox="0 0 355 180"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="180" rx="20" fill="url(%23a)"/><circle cx="60" cy="90" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="40" r="50" fill="white" opacity="0.05"/><path d="M270 120c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 24px;
+      position: relative;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+    }
+    
+    .plan-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    
+    .plan-card.selected {
+      border-color: #5e17eb;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.15);
+    }
+    
+    .plan-card.premium {
+      background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 1));
+    }
+    
+    .plan-badge {
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      background-color: #5e17eb;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 4px 12px;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(94, 23, 235, 0.25);
+    }
+    
+    .plan-price {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .plan-duration {
+      color: #64748b;
+      font-size: 14px;
+    }
+    
+    .plan-savings {
+      color: #10b981;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: rgba(94, 23, 235, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5e17eb;
+      font-size: 12px;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    
+    .premium-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    
+    .subscribe-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      background-color: #5e17eb;
+      color: white;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.25);
+      margin-top: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .subscribe-btn:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 8px rgba(94, 23, 235, 0.25);
+    }
+    
+    .skip-btn {
+      text-align: center;
+      margin-top: 16px;
+      color: #64748b;
+      padding: 12px;
+      font-weight: 500;
+    }
+    
+    .benefit-item {
+      background-color: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .benefit-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background-color: #f8f5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5e17eb;
+      font-size: 20px;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+    
+    .panda-card {
+      width: 50px;
+      height: 70px;
+      border-radius: 8px;
+      background-color: #f0ebff;
+      flex-shrink: 0;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .panda-card::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    .panda-card.cute::after {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140"><circle cx="50" cy="50" r="45" fill="white"/><circle cx="30" cy="40" r="10" fill="black"/><circle cx="70" cy="40" r="10" fill="black"/><circle cx="30" cy="42" r="3" fill="white"/><circle cx="70" cy="42" r="3" fill="white"/><ellipse cx="50" cy="70" rx="8" ry="5" fill="black"/><path d="M30 85 Q50 95 70 85" stroke="black" stroke-width="3" fill="none"/></svg>');
+    }
+    
+    .panda-card.weird::after {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140"><circle cx="50" cy="50" r="45" fill="white"/><ellipse cx="35" cy="40" rx="15" ry="8" fill="black"/><ellipse cx="65" cy="40" rx="15" ry="8" fill="black"/><ellipse cx="35" cy="40" rx="5" ry="3" fill="white"/><ellipse cx="65" cy="40" rx="5" ry="3" fill="white"/><rect x="40" y="65" width="20" height="10" fill="black"/><path d="M25 60 Q50 80 75 60" stroke="black" stroke-width="2" fill="none"/></svg>');
+    }
+    
+    .panda-preview {
+      position: relative;
+    }
+    
+    .panda-preview::before {
+      content: 'VIP专属';
+      position: absolute;
+      top: -10px;
+      left: 10px;
+      background-color: #ff3b30;
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const planCards = document.querySelectorAll('.plan-card');
+      
+      planCards.forEach(card => {
+        card.addEventListener('click', function() {
+          // Deselect all cards
+          planCards.forEach(c => c.classList.remove('selected'));
+          // Select clicked card
+          this.classList.add('selected');
+        });
+      });
+      
+      // Default select the yearly plan
+      document.querySelector('.plan-yearly').classList.add('selected');
+      
+      // Skip button
+      document.querySelector('.skip-btn').addEventListener('click', function() {
+        window.location.href = 'home.html';
+      });
+      
+      // Subscribe button
+      document.querySelector('.subscribe-btn').addEventListener('click', function() {
+        // Normally would handle payment processing
+        // For now, just redirect to home
+        window.location.href = 'home.html';
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="subscription-container">
+    <div class="header">
+      <div class="title">高级会员</div>
+      <div class="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center">
+        <i class="fas fa-crown text-purple-600"></i>
+      </div>
+    </div>
+    
+    <div class="subscription-banner">
+      <h2 class="text-2xl font-bold mb-2">解锁完整的健康体验</h2>
+      <p class="opacity-80">成为高级会员，享受更多专业功能</p>
+    </div>
+    
+    <div class="plan-card plan-monthly">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <div class="text-lg font-bold">月度计划</div>
+          <div class="plan-price">¥28<span class="text-base font-normal">/月</span></div>
+          <div class="plan-duration">按月付费</div>
+        </div>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div>解锁所有高级评估</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div>解锁所有卡牌收集</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div>无广告体验</div>
+      </div>
+    </div>
+    
+    <div class="plan-card plan-yearly premium">
+      <div class="plan-badge">省40%</div>
+      <svg class="premium-bg" viewBox="0 0 120 120">
+        <path d="M120 0L0 120V0H120Z" fill="#5e17eb"/>
+      </svg>
+      
+      <div class="flex justify-between items-start mb-4 relative z-10">
+        <div>
+          <div class="text-lg font-bold">年度计划</div>
+          <div class="plan-price">¥198<span class="text-base font-normal">/年</span></div>
+          <div class="plan-duration">相当于 ¥16.5/月</div>
+          <div class="plan-savings">比月度计划节省 ¥138</div>
+        </div>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div>解锁所有高级评估</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div>解锁所有卡牌收集</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div>无广告体验</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div><strong>额外赠送</strong>: 10张稀有卡牌</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div><strong>额外赠送</strong>: 专属VIP客服</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-check"></i></div>
+        <div><strong>额外赠送</strong>: 独家熊猫卡牌系列</div>
+      </div>
+      
+      <div class="panda-preview mt-3">
+        <div class="flex space-x-2 overflow-x-auto pb-2">
+          <div class="panda-card cute"></div>
+          <div class="panda-card weird"></div>
+          <div class="panda-card"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-6 mb-8">
+      <h3 class="text-lg font-bold mb-4">会员专享福利</h3>
+      
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-lock-open"></i>
+        </div>
+        <div>
+          <div class="font-medium">解锁所有评估项目</div>
+          <div class="text-sm text-gray-500">深入了解五行气血状态</div>
+        </div>
+      </div>
+      
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-paw"></i>
+        </div>
+        <div>
+          <div class="font-medium">熊猫卡牌收藏</div>
+          <div class="text-sm text-gray-500">独家可爱与奇特风格的熊猫卡牌</div>
+        </div>
+      </div>
+      
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-file-medical-alt"></i>
+        </div>
+        <div>
+          <div class="font-medium">专业健康报告</div>
+          <div class="text-sm text-gray-500">更详细的分析与建议</div>
+        </div>
+      </div>
+      
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <i class="fas fa-crown"></i>
+        </div>
+        <div>
+          <div class="font-medium">专属会员徽章</div>
+          <div class="text-sm text-gray-500">在排行榜上展示您的VIP身份</div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="subscribe-btn">
+      立即订阅
+    </button>
+    
+    <div class="skip-btn">
+      暂不订阅，继续体验基础版
+    </div>
+    
+    <div class="text-xs text-gray-500 text-center mt-6">
+      <p>订阅会自动续费，可随时取消</p>
+      <p>支付将在确认购买时通过Apple ID账户扣款</p>
+    </div>
+  </div>
+</body>
+</html>

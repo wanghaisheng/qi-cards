@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 个人中心</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .profile-header {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="180" viewBox="0 0 355 180"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="180" rx="20" fill="url(%23a)"/><circle cx="60" cy="90" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="40" r="50" fill="white" opacity="0.05"/><path d="M270 120c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 24px;
+      position: relative;
+      box-shadow: 0 8px 20px rgba(94, 23, 235, 0.25);
+    }
+    
+    .level-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .avatar-glow {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+      animation: rotateGlow 3s linear infinite;
+    }
+    
+    @keyframes rotateGlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .avatar-icon {
+      position: relative;
+      z-index: 2;
+      font-size: 40px;
+      color: #5e17eb;
+    }
+    
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .stat-divider {
+      width: 1px;
+      background-color: rgba(255, 255, 255, 0.2);
+      margin: 0 12px;
+    }
+    
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background-color: white;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeInUp 0.5s forwards;
+    }
+    
+    .menu-item:nth-child(1) { animation-delay: 0.1s; }
+    .menu-item:nth-child(2) { animation-delay: 0.2s; }
+    .menu-item:nth-child(3) { animation-delay: 0.3s; }
+    .menu-item:nth-child(4) { animation-delay: 0.4s; }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .menu-item:active {
+      transform: scale(0.98);
+      background-color: #f8f5ff;
+    }
+    
+    .menu-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: #f8f5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #5e17eb;
+      margin-right: 16px;
+    }
+    
+    .achievement-container {
+      padding: 12px 16px;
+      background-color: #f8f5ff;
+      border-radius: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .achievement-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .achievement-item:last-child {
+      border-bottom: none;
+    }
+    
+    .achievement-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #5e17eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    
+    .achievement-locked {
+      background-color: #cbd5e0;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <div class="title">个人中心</div>
+      <div class="bg-gray-100 rounded-full p-3">
+        <i class="fas fa-cog text-gray-600"></i>
+      </div>
+    </div>
+    
+    <div class="profile-header">
+      <div class="level-badge">
+        <i class="fas fa-crown text-yellow-300 mr-1"></i>
+        等级 25
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="avatar-large">
+          <div class="avatar-glow"></div>
+          <i class="avatar-icon fas fa-user"></i>
+        </div>
+        <div class="text-xl font-bold mb-1">健康追寻者</div>
+        <div class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
+          VIP会员
+        </div>
+      </div>
+      
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="text-2xl font-bold">16</div>
+          <div class="text-sm opacity-80">收集卡牌</div>
+        </div>
+        
+        <div class="stat-divider"></div>
+        
+        <div class="stat-item">
+          <div class="text-2xl font-bold">8</div>
+          <div class="text-sm opacity-80">完成关卡</div>
+        </div>
+        
+        <div class="stat-divider"></div>
+        
+        <div class="stat-item">
+          <div class="text-2xl font-bold">3280</div>
+          <div class="text-sm opacity-80">金币</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">最近成就</h3>
+        <span class="text-purple-600 text-sm">查看全部</span>
+      </div>
+      
+      <div class="achievement-container">
+        <div class="achievement-item">
+          <div class="flex items-center">
+            <div class="achievement-icon">
+              <i class="fas fa-award"></i>
+            </div>
+            <div class="flex-1">
+              <div class="font-medium">肝气血探索者</div>
+              <div class="text-sm text-gray-500">完成肝气血评估的2个关卡</div>
+            </div>
+            <div class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+              已获得
+            </div>
+          </div>
+        </div>
+        
+        <div class="achievement-item">
+          <div class="achievement-icon">
+            <i class="fas fa-book-medical"></i>
+          </div>
+          <div class="flex-1">
+            <div class="font-medium">初级中医学徒</div>
+            <div class="text-sm text-gray-500">收集10张不同系列的卡牌</div>
+          </div>
+          <div class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+            已获得
+          </div>
+        </div>
+        
+        <div class="achievement-item">
+          <div class="achievement-icon achievement-locked">
+            <i class="fas fa-lock"></i>
+          </div>
+          <div class="flex-1">
+            <div class="font-medium text-gray-500">中医精英</div>
+            <div class="text-sm text-gray-500">完成所有评估关卡</div>
+          </div>
+          <div class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full">
+            未获得
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <div class="menu-item" onclick="window.location.href='history.html'">
+        <div class="menu-icon">
+          <i class="fas fa-history"></i>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">历史记录</div>
+          <div class="text-sm text-gray-500">查看您的评估历史</div>
+        </div>
+        <i class="fas fa-chevron-right text-gray-400"></i>
+      </div>
+      
+      <div class="menu-item" onclick="window.location.href='achievements.html'">
+        <div class="menu-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">成就中心</div>
+          <div class="text-sm text-gray-500">您已完成12/30个成就</div>
+        </div>
+        <i class="fas fa-chevron-right text-gray-400"></i>
+      </div>
+      
+      <div class="menu-item" onclick="window.location.href='assets.html'">
+        <div class="menu-icon">
+          <i class="fas fa-coins"></i>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">我的资产</div>
+          <div class="text-sm text-gray-500">金币、道具与特权</div>
+        </div>
+        <i class="fas fa-chevron-right text-gray-400"></i>
+      </div>
+      
+      <div class="menu-item" onclick="window.location.href='health-log.html'">
+        <div class="menu-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">健康日志</div>
+          <div class="text-sm text-gray-500">记录您的健康变化</div>
+        </div>
+        <i class="fas fa-chevron-right text-gray-400"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tab-bar">
+    <div class="tab-item" onclick="window.location.href='home.html'">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='levels.html'">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='cards.html'">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='shop.html'">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item active" onclick="window.location.href='profile.html'">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 首页</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .banner {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="180" viewBox="0 0 355 180"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="180" rx="20" fill="url(%23a)"/><circle cx="60" cy="90" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="40" r="50" fill="white" opacity="0.05"/><path d="M270 120c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      height: 180px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      color: white;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+    }
+    
+    .banner:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(94, 23, 235, 0.2), transparent);
+      z-index: 1;
+    }
+    
+    .banner-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .floating-character {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      z-index: 2;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .daily-task {
+      background-color: rgba(94, 23, 235, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .daily-task:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: translateX(-100%);
+    }
+    
+    .daily-task:hover:after {
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      100% { transform: translateX(100%); }
+    }
+    
+    .task-icon {
+      width: 48px;
+      height: 48px;
+      background-color: #5e17eb;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      margin-right: 12px;
+      box-shadow: 0 4px 10px rgba(94, 23, 235, 0.3);
+      transition: transform 0.3s ease;
+    }
+    
+    .daily-task:hover .task-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .category-card {
+      border-radius: 16px;
+      overflow: hidden;
+      height: 120px;
+      position: relative;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .category-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .category-card:hover .category-image {
+      transform: scale(1.05);
+    }
+    
+    .category-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      background-image: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+    }
+    
+    .streak-container {
+      background: linear-gradient(135deg, #5e17eb, #a259ff);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+      color: white;
+    }
+    
+    .streak-days {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+    
+    .streak-day {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+      font-size: 14px;
+      position: relative;
+    }
+    
+    .streak-day.completed {
+      background-color: white;
+      color: #5e17eb;
+    }
+    
+    .streak-day.current {
+      border: 2px solid white;
+      animation: pulse 2s infinite;
+    }
+    
+    .streak-connector {
+      position: absolute;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.3);
+      top: 50%;
+      transform: translateY(-50%);
+      left: 36px;
+      right: 36px;
+      z-index: 0;
+    }
+    
+    .streak-progress {
+      position: absolute;
+      height: 2px;
+      background-color: white;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 36px;
+      width: 60%;
+      z-index: 1;
+    }
+    
+    .health-stats {
+      background-color: white;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .stats-progress {
+      height: 6px;
+      background-color: #f1f5f9;
+      border-radius: 3px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      border-radius: 3px;
+    }
+    
+    .progress-liver {
+      background-color: #ffae42;
+      width: 85%;
+    }
+    
+    .progress-heart {
+      background-color: #e84393;
+      width: 68%;
+    }
+    
+    .progress-stomach {
+      background-color: #00b894;
+      width: 92%;
+    }
+    
+    .progress-kidney {
+      background-color: #0984e3;
+      width: 75%;
+    }
+    
+    .featured-card {
+      position: relative;
+      background: linear-gradient(135deg, #ffae42, #ff7730);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 16px rgba(255, 119, 48, 0.25);
+      color: white;
+      overflow: hidden;
+      min-height: 100px;
+    }
+    
+    .featured-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .featured-circles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    
+    .featured-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Simulate loading tasks from API
+      setTimeout(function() {
+        document.querySelectorAll('.daily-task').forEach(task => {
+          task.style.opacity = '1';
+          task.style.transform = 'translateY(0)';
+        });
+      }, 300);
+      
+      // Initialize the health chart animation
+      setTimeout(function() {
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+          bar.style.width = bar.getAttribute('data-width') || bar.style.width;
+        });
+      }, 500);
+    });
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <div>
+        <div class="text-sm text-gray-500">欢迎回来</div>
+        <div class="title">气血道馆</div>
+      </div>
+      <div class="flex items-center">
+        <div class="bg-gray-100 rounded-full p-3 mr-2 relative">
+          <i class="fas fa-bell text-gray-600"></i>
+          <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center">
+          <i class="fas fa-user text-purple-600"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="banner">
+      <div class="banner-content">
+        <h2 class="text-2xl font-bold mb-2">开启奇妙的中医之旅</h2>
+        <p class="mb-4 opacity-80">今日挑战：肝气评估</p>
+        <button class="bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all">
+          <i class="fas fa-play-circle mr-2"></i>立即体验
+        </button>
+      </div>
+      <svg class="floating-character" width="80" height="80" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="60" cy="60" rx="40" ry="45" fill="black"/>
+        <ellipse cx="60" cy="65" rx="35" ry="40" fill="white"/>
+        <circle cx="45" cy="50" r="15" fill="black"/>
+        <circle cx="75" cy="50" r="15" fill="black"/>
+        <circle cx="45" cy="48" r="5" fill="white"/>
+        <circle cx="75" cy="48" r="5" fill="white"/>
+        <path d="M50 75 Q60 80 70 75" stroke="black" stroke-width="3" fill="none"/>
+        <ellipse cx="30" cy="35" rx="15" ry="10" fill="black"/>
+        <ellipse cx="90" cy="35" rx="15" ry="10" fill="black"/>
+      </svg>
+    </div>
+    
+    <div class="streak-container">
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="text-lg font-bold">连续打卡</div>
+          <div class="text-sm opacity-80">再坚持3天获得稀有卡牌</div>
+        </div>
+        <div class="text-3xl font-bold">4</div>
+      </div>
+      
+      <div class="streak-days mt-4 relative">
+        <div class="streak-connector"></div>
+        <div class="streak-progress"></div>
+        
+        <div class="streak-day completed">一</div>
+        <div class="streak-day completed">二</div>
+        <div class="streak-day completed">三</div>
+        <div class="streak-day completed">四</div>
+        <div class="streak-day current">五</div>
+        <div class="streak-day">六</div>
+        <div class="streak-day">日</div>
+      </div>
+    </div>
+    
+    <div class="featured-card mb-6">
+      <div class="featured-badge">限时挑战</div>
+      <div class="featured-circles">
+        <svg width="100%" height="100%" viewBox="0 0 300 100">
+          <circle cx="260" cy="30" r="20" fill="white" opacity="0.1" />
+          <circle cx="50" cy="50" r="30" fill="white" opacity="0.05" />
+        </svg>
+      </div>
+      <div class="featured-content">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-fire mr-2"></i>
+          <div class="font-semibold">五行相生大挑战</div>
+        </div>
+        <div class="text-sm opacity-80 mb-3">完成所有五行评估，获得传说卡牌</div>
+        <div class="flex justify-between items-center">
+          <div class="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+            剩余时间：3天12小时
+          </div>
+          <button class="text-xs bg-white text-orange-500 px-3 py-1 rounded-full font-semibold">
+            去挑战
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="health-stats mb-6">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-lg font-bold">我的气运状态</h3>
+        <span class="text-purple-600 text-sm">详情</span>
+      </div>
+      
+      <div class="mb-3">
+        <div class="flex justify-between text-sm">
+          <span>肝气</span>
+          <span class="font-medium">85%</span>
+        </div>
+        <div class="stats-progress">
+          <div class="progress-bar progress-liver" data-width="85%"></div>
+        </div>
+      </div>
+      
+      <div class="mb-3">
+        <div class="flex justify-between text-sm">
+          <span>心气</span>
+          <span class="font-medium">68%</span>
+        </div>
+        <div class="stats-progress">
+          <div class="progress-bar progress-heart" data-width="68%"></div>
+        </div>
+      </div>
+      
+      <div class="mb-3">
+        <div class="flex justify-between text-sm">
+          <span>胃气</span>
+          <span class="font-medium">92%</span>
+        </div>
+        <div class="stats-progress">
+          <div class="progress-bar progress-stomach" data-width="92%"></div>
+        </div>
+      </div>
+      
+      <div>
+        <div class="flex justify-between text-sm">
+          <span>肾气</span>
+          <span class="font-medium">75%</span>
+        </div>
+        <div class="stats-progress">
+          <div class="progress-bar progress-kidney" data-width="75%"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">排行榜</h3>
+        <a href="leaderboard.html" class="text-purple-600 text-sm">查看全部</a>
+      </div>
+      
+      <div class="bg-white rounded-xl p-4 shadow-md">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold mr-3">1</div>
+            <div class="font-medium">中医大师</div>
+          </div>
+          <div class="text-sm font-semibold">12,468分</div>
+        </div>
+        
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold mr-3">2</div>
+            <div class="font-medium">养生达人</div>
+          </div>
+          <div class="text-sm font-semibold">11,753分</div>
+        </div>
+        
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold mr-3">3</div>
+            <div class="font-medium">气运守护者</div>
+          </div>
+          <div class="text-sm font-semibold">10,842分</div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-3">28</div>
+            <div class="font-medium">我</div>
+          </div>
+          <div class="text-sm font-semibold">6,842分</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">每日任务</h3>
+        <span class="text-purple-600 text-sm">查看全部</span>
+      </div>
+      
+      <div class="daily-task" style="opacity: 0; transform: translateY(20px); transition: all 0.3s ease;">
+        <div class="task-icon">
+          <i class="fas fa-book-medical"></i>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">完成肝气评估</div>
+          <div class="text-sm text-gray-500">获得2张稀有卡牌</div>
+        </div>
+        <button class="px-3 py-1 bg-purple-600 text-white rounded-lg text-sm">前往</button>
+      </div>
+      
+      <div class="daily-task" style="opacity: 0; transform: translateY(20px); transition: all 0.3s ease; transition-delay: 0.1s;">
+        <div class="task-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">收集阴阳卡组</div>
+          <div class="text-sm text-gray-500">已完成3/5</div>
+        </div>
+        <button class="px-3 py-1 bg-gray-200 text-gray-600 rounded-lg text-sm">继续</button>
+      </div>
+      
+      <div class="daily-task" style="opacity: 0; transform: translateY(20px); transition: all 0.3s ease; transition-delay: 0.2s;">
+        <div class="task-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">邀请好友体验</div>
+          <div class="text-sm text-gray-500">每邀请1人获得200金币</div>
+        </div>
+        <button class="px-3 py-1 bg-purple-600 text-white rounded-lg text-sm">邀请</button>
+      </div>
+    </div>
+    
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold">评估专区</h3>
+        <span class="text-purple-600 text-sm">更多</span>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="category-card">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='120' viewBox='0 0 150 120'><rect width='150' height='120' fill='%23ffae42'/><circle cx='30' cy='30' r='15' fill='white' opacity='0.2'/><path d='M80 60c10 0 20 5 20 15s-10 15-20 15-20-5-20-15 10-15 20-15z' fill='white' opacity='0.1'/></svg>" class="category-image">
+          <div class="category-overlay">
+            <div class="font-bold">肝气评估</div>
+            <div class="text-xs opacity-80">5个关卡</div>
+          </div>
+        </div>
+        
+        <div class="category-card">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='120' viewBox='0 0 150 120'><rect width='150' height='120' fill='%2300b894'/><circle cx='120' cy='30' r='15' fill='white' opacity='0.2'/><path d='M50 80c10 0 20 5 20 15s-10 15-20 15-20-5-20-15 10-15 20-15z' fill='white' opacity='0.1'/></svg>" class="category-image">
+          <div class="category-overlay">
+            <div class="font-bold">胃气评估</div>
+            <div class="text-xs opacity-80">4个关卡</div>
+          </div>
+        </div>
+        
+        <div class="category-card">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='120' viewBox='0 0 150 120'><rect width='150' height='120' fill='%230984e3'/><circle cx='75' cy='40' r='15' fill='white' opacity='0.2'/><path d='M100 70c10 0 20 5 20 15s-10 15-20 15-20-5-20-15 10-15 20-15z' fill='white' opacity='0.1'/></svg>" class="category-image">
+          <div class="category-overlay">
+            <div class="font-bold">肾气评估</div>
+            <div class="text-xs opacity-80">未解锁</div>
+          </div>
+        </div>
+        
+        <div class="category-card">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='120' viewBox='0 0 150 120'><rect width='150' height='120' fill='%23a55eea'/><circle cx='100' cy='50' r='15' fill='white' opacity='0.2'/><path d='M50 40c10 0 20 5 20 15s-10 15-20 15-20-5-20-15 10-15 20-15z' fill='white' opacity='0.1'/></svg>" class="category-image">
+          <div class="category-overlay">
+            <div class="font-bold">心气评估</div>
+            <div class="text-xs opacity-80">未解锁</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="height: 83px;"></div>
+  </div>
+  
+  <div class="tab-bar">
+    <div class="tab-item active" onclick="window.location.href='home.html'">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='levels.html'">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='cards.html'">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='shop.html'">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='profile.html'">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 卡牌图鉴</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .collection-stats {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="100" viewBox="0 0 355 100"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="100" rx="20" fill="url(%23a)"/><circle cx="40" cy="30" r="15" fill="white" opacity="0.1"/><circle cx="300" cy="70" r="20" fill="white" opacity="0.05"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 20px;
+      color: white;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 16px rgba(94, 23, 235, 0.2);
+    }
+    
+    .progress-ring {
+      width: 60px;
+      height: 60px;
+      transform: rotate(-90deg);
+      transition: all 1s ease;
+    }
+    
+    .ring-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 6;
+    }
+    
+    .ring-progress {
+      fill: none;
+      stroke: white;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 150;
+      stroke-dashoffset: 90;
+      transition: stroke-dashoffset 1.5s ease;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      margin-right: 10px;
+      white-space: nowrap;
+    }
+    
+    .tab-btn.active {
+      background-color: #5e17eb;
+      color: white;
+    }
+    
+    .tab-btn:not(.active) {
+      background-color: #f1f5f9;
+      color: #64748b;
+    }
+    
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .card-item {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+    
+    .card-item:active {
+      transform: scale(0.97);
+    }
+    
+    .card-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-preview {
+      height: 130px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    
+    .card-circles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    
+    .card-name {
+      color: white;
+      font-weight: bold;
+      margin-bottom: 4px;
+      text-align: center;
+      font-size: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .card-type {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 10px;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 2px 8px;
+      border-radius: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .card-info {
+      background-color: white;
+      padding: 12px;
+    }
+    
+    .card-icon {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    
+    .liver-card {
+      background-image: linear-gradient(to right, #ffae42, #ff7730);
+    }
+    
+    .stomach-card {
+      background-image: linear-gradient(to right, #00b894, #00cec9);
+    }
+    
+    .kidney-card {
+      background-image: linear-gradient(to right, #0984e3, #6c5ce7);
+    }
+    
+    .heart-card {
+      background-image: linear-gradient(to right, #e84393, #a55eea);
+    }
+    
+    .locked-card {
+      background-color: #cbd5e0;
+      filter: grayscale(1);
+    }
+    
+    .locked-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+    }
+    
+    .glow-effect {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .card-preview:hover .glow-effect {
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <div class="title">卡牌图鉴</div>
+      <div class="bg-gray-100 rounded-full p-3">
+        <i class="fas fa-search text-gray-600"></i>
+      </div>
+    </div>
+    
+    <div class="collection-stats">
+      <div class="flex items-center">
+        <svg class="progress-ring" viewBox="0 0 60 60">
+          <circle class="ring-bg" cx="30" cy="30" r="24" />
+          <circle class="ring-progress" cx="30" cy="30" r="24" />
+        </svg>
+        
+        <div class="ml-4">
+          <div class="text-sm opacity-80">收集进度</div>
+          <div class="text-xl font-bold">16/36</div>
+          <div class="text-xs opacity-80">再收集2张可解锁奖励</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tab-buttons">
+      <button class="tab-btn active">全部</button>
+      <button class="tab-btn">肝气</button>
+      <button class="tab-btn">胃气</button>
+      <button class="tab-btn">肾气</button>
+      <button class="tab-btn">心气</button>
+      <button class="tab-btn">传说卡牌</button>
+      <button class="tab-btn">熊猫系列</button>
+    </div>
+    
+    <div class="card-grid">
+      <div class="card-item slide-up" style="animation-delay: 0.1s" onclick="window.location.href='card-detail.html'">
+        <div class="card-preview liver-card">
+          <div class="glow-effect"></div>
+          <div class="card-circles">
+            <svg width="100%" height="100%" viewBox="0 0 160 130">
+              <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+              <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+              <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <svg class="card-icon" viewBox="0 0 30 30">
+              <path d="M15 5C22 12 25 15 25 20C25 25 20 28 15 28C10 28 5 25 5 20C5 15 8 12 15 5Z" fill="white" opacity="0.9"/>
+            </svg>
+            <div class="card-name">肝气郁结</div>
+            <div class="card-type">稀有</div>
+          </div>
+        </div>
+        
+        <div class="card-info">
+          <div class="flex items-center justify-between">
+            <div class="font-medium text-sm">获得时间</div>
+            <div class="text-sm text-gray-500">2天前</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-item slide-up" style="animation-delay: 0.2s" onclick="window.location.href='card-detail.html'">
+        <div class="card-preview liver-card">
+          <div class="glow-effect"></div>
+          <div class="card-circles">
+            <svg width="100%" height="100%" viewBox="0 0 160 130">
+              <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+              <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+              <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <svg class="card-icon" viewBox="0 0 30 30">
+              <path d="M15 5C22 12 25 15 25 20C25 25 20 28 15 28C10 28 5 25 5 20C5 15 8 12 15 5Z" fill="white" opacity="0.9"/>
+            </svg>
+            <div class="card-name">肝火旺盛</div>
+            <div class="card-type">普通</div>
+          </div>
+        </div>
+        
+        <div class="card-info">
+          <div class="flex items-center justify-between">
+            <div class="font-medium text-sm">获得时间</div>
+            <div class="text-sm text-gray-500">5天前</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-item slide-up" style="animation-delay: 0.3s" onclick="window.location.href='card-detail.html'">
+        <div class="card-preview stomach-card">
+          <div class="glow-effect"></div>
+          <div class="card-circles">
+            <svg width="100%" height="100%" viewBox="0 0 160 130">
+              <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+              <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+              <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <svg class="card-icon" viewBox="0 0 30 30">
+              <ellipse cx="15" cy="15" rx="10" ry="12" fill="white" opacity="0.9"/>
+            </svg>
+            <div class="card-name">胃气虚弱</div>
+            <div class="card-type">普通</div>
+          </div>
+        </div>
+        
+        <div class="card-info">
+          <div class="flex items-center justify-between">
+            <div class="font-medium text-sm">获得时间</div>
+            <div class="text-sm text-gray-500">一周前</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-item slide-up" style="animation-delay: 0.4s" onclick="window.location.href='card-detail.html'">
+        <div class="card-preview kidney-card">
+          <div class="glow-effect"></div>
+          <div class="card-circles">
+            <svg width="100%" height="100%" viewBox="0 0 160 130">
+              <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+              <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+              <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <svg class="card-icon" viewBox="0 0 30 30">
+              <path d="M10 10C14 6 16 8 20 10C24 12 24 18 20 22C16 26 14 24 10 20C6 16 6 14 10 10Z" fill="white" opacity="0.9"/>
+            </svg>
+            <div class="card-name">肾阴不足</div>
+            <div class="card-type">稀有</div>
+          </div>
+        </div>
+        
+        <div class="card-info">
+          <div class="flex items-center justify-between">
+            <div class="font-medium text-sm">获得时间</div>
+            <div class="text-sm text-gray-500">2周前</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-item slide-up" style="animation-delay: 0.5s" onclick="window.location.href='card-detail.html'">
+        <div class="card-preview heart-card">
+          <div class="glow-effect"></div>
+          <div class="card-circles">
+            <svg width="100%" height="100%" viewBox="0 0 160 130">
+              <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+              <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+              <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <svg class="card-icon" viewBox="0 0 30 30">
+              <path d="M15 25C15 25 5 15 5 10C5 5 10 5 15 10C20 5 25 5 25 10C25 15 15 25 15 25Z" fill="white" opacity="0.9"/>
+            </svg>
+            <div class="card-name">心气不足</div>
+            <div class="card-type">普通</div>
+          </div>
+        </div>
+        
+        <div class="card-info">
+          <div class="flex items-center justify-between">
+            <div class="font-medium text-sm">获得时间</div>
+            <div class="text-sm text-gray-500">3周前</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-item slide-up" style="animation-delay: 0.6s" onclick="window.location.href='card-detail.html'">
+        <div class="card-preview locked-card">
+          <div class="locked-overlay">
+            <i class="fas fa-lock"></i>
+          </div>
+          <div class="glow-effect"></div>
+          <div class="card-circles">
+            <svg width="100%" height="100%" viewBox="0 0 160 130">
+              <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+              <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+              <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+            </svg>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <svg class="card-icon" viewBox="0 0 30 30">
+              <path d="M15 5C22 12 25 15 25 20C25 25 20 28 15 28C10 28 5 25 5 20C5 15 8 12 15 5Z" fill="white" opacity="0.9"/>
+            </svg>
+            <div class="card-name">肝气调和</div>
+            <div class="card-type">传说</div>
+          </div>
+        </div>
+        
+        <div class="card-info">
+          <div class="text-xs text-gray-500">
+            <i class="fas fa-info-circle mr-1"></i>
+            完成全部肝气关卡解锁
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-6 p-4 bg-purple-100 rounded-xl">
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center">
+          <i class="fas fa-crown text-purple-600 mr-2"></i>
+          <span class="font-bold">VIP专属熊猫卡牌</span>
+        </div>
+        <a href="subscription.html" class="text-sm text-purple-600">升级会员</a>
+      </div>
+      
+      <div class="grid grid-cols-3 gap-4">
+        <div class="card-item locked-card">
+          <div class="card-preview">
+            <div class="locked-overlay">
+              <i class="fas fa-lock"></i>
+            </div>
+            <div class="card-circles">
+              <svg width="100%" height="100%" viewBox="0 0 160 130">
+                <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+                <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+                <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+              </svg>
+            </div>
+            
+            <div class="flex flex-col items-center">
+              <svg class="card-icon" viewBox="0 0 30 30">
+                <path d="M15 5C22 12 25 15 25 20C25 25 20 28 15 28C10 28 5 25 5 20C5 15 8 12 15 5Z" fill="white" opacity="0.9"/>
+              </svg>
+              <div class="card-name">萌趣熊猫</div>
+              <div class="card-type">VIP专属</div>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="text-xs text-gray-500">
+              <i class="fas fa-crown mr-1 text-purple-600"></i>
+              升ﾞ级为VIP会员解锁
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-item locked-card">
+          <div class="card-preview">
+            <div class="locked-overlay">
+              <i class="fas fa-lock"></i>
+            </div>
+            <div class="card-circles">
+              <svg width="100%" height="100%" viewBox="0 0 160 130">
+                <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+                <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+                <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+              </svg>
+            </div>
+            
+            <div class="flex flex-col items-center">
+              <svg class="card-icon" viewBox="0 0 30 30">
+                <path d="M15 5C22 12 25 15 25 20C25 25 20 28 15 28C10 28 5 25 5 20C5 15 8 12 15 5Z" fill="white" opacity="0.9"/>
+              </svg>
+              <div class="card-name">奇趣熊猫</div>
+              <div class="card-type">VIP专属</div>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="text-xs text-gray-500">
+              <i class="fas fa-crown mr-1 text-purple-600"></i>
+              升级为VIP会员解锁
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-item locked-card">
+          <div class="card-preview">
+            <div class="locked-overlay">
+              <i class="fas fa-lock"></i>
+            </div>
+            <div class="card-circles">
+              <svg width="100%" height="100%" viewBox="0 0 160 130">
+                <circle cx="40" cy="40" r="15" fill="white" opacity="0.1" />
+                <circle cx="120" cy="30" r="10" fill="white" opacity="0.1" />
+                <circle cx="80" cy="100" r="20" fill="white" opacity="0.1" />
+              </svg>
+            </div>
+            
+            <div class="flex flex-col items-center">
+              <svg class="card-icon" viewBox="0 0 30 30">
+                <path d="M15 5C22 12 25 15 25 20C25 25 20 28 15 28C10 28 5 25 5 20C5 15 8 12 15 5Z" fill="white" opacity="0.9"/>
+              </svg>
+              <div class="card-name">丑萌熊猫</div>
+              <div class="card-type">VIP专属</div>
+            </div>
+          </div>
+          
+          <div class="card-info">
+            <div class="text-xs text-gray-500">
+              <i class="fas fa-crown mr-1 text-purple-600"></i>
+              升级为VIP会员解锁
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="padding-bottom: 83px;"></div>
+  </div>
+  
+  <div class="tab-bar">
+    <div class="tab-item" onclick="window.location.href='home.html'">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='levels.html'">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item active" onclick="window.location.href='cards.html'">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='shop.html'">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item" onclick="window.location.href='profile.html'">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>

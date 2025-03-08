@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>气血管理大师 - 结果反馈</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .results-header {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="355" height="200" viewBox="0 0 355 200"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%235e17eb"/><stop offset="100%" stop-color="%23a259ff"/></linearGradient></defs><rect width="355" height="200" rx="20" fill="url(%23a)"/><circle cx="60" cy="90" r="30" fill="white" opacity="0.1"/><circle cx="280" cy="50" r="50" fill="white" opacity="0.05"/><path d="M270 140c20 0 40 10 40 30s-20 30-40 30-40-10-40-30 20-30 40-30z" fill="white" opacity="0.07"/></svg>');
+      background-size: cover;
+      background-position: center;
+      border-radius: 20px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 24px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(94, 23, 235, 0.25);
+    }
+    
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 16px auto;
+      position: relative;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .score-number {
+      font-size: 36px;
+      font-weight: bold;
+      color: #5e17eb;
+      opacity: 0;
+      animation: scoreAppear 1s ease forwards 0.5s;
+    }
+    
+    @keyframes scoreAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    @keyframes dashOffset {
+      from {
+        stroke-dashoffset: 380;
+      }
+      to {
+        stroke-dashoffset: 95;
+      }
+    }
+    
+    .circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 10;
+    }
+    
+    .circle-progress {
+      fill: none;
+      stroke: white;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 380;
+      stroke-dashoffset: 95;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      animation: dashOffset 1.5s ease-in-out;
+    }
+    
+    .reward-card {
+      background-color: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+    
+    .card-preview {
+      background-image: linear-gradient(to right, #ffae42, #ff7730);
+      border-radius: 12px;
+      height: 140px;
+      margin-top: 16px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 16px rgba(255, 119, 48, 0.3);
+      opacity: 0;
+      transform: scale(0.9);
+      animation: cardReveal 0.8s ease forwards 1s;
+    }
+    
+    @keyframes cardReveal {
+      from {
+        opacity: 0;
+        transform: scale(0.9) rotate(-5deg);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+    
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .card-circles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    
+    .card-name {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    
+    .card-type {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 12px;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    
+    .recommendation-item {
+      display: flex;
+      margin-bottom: 16px;
+      background-color: #f8f5ff;
+      border-radius: 12px;
+      padding: 16px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: recommendAppear 0.5s ease forwards;
+    }
+    
+    .recommendation-item:nth-child(1) { animation-delay: 1.2s; }
+    .recommendation-item:nth-child(2) { animation-delay: 1.4s; }
+    .recommendation-item:nth-child(3) { animation-delay: 1.6s; }
+    
+    @keyframes recommendAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .rec-icon {
+      width: 40px;
+      height: 40px;
+      background-color: #5e17eb;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold">评估结果</h1>
+      <button class="bg-gray-200 px-3 py-2 rounded-full">
+        <i class="fas fa-share-alt text-gray-600"></i>
+      </button>
+    </div>
+    
+    <div class="results-header">
+      <h2 class="text-lg font-semibold">乳房与肋部问题</h2>
+      <div class="score-circle">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle class="circle-bg" cx="60" cy="60" r="55" />
+          <circle class="circle-progress" cx="60" cy="60" r="55" />
+        </svg>
+        <div class="score-number">84</div>
+      </div>
+      <div class="text-lg font-semibold mt-2">肝气微郁</div>
+      <div class="text-sm opacity-80 mt-1">您的肝气状态需要调理</div>
+    </div>
+    
+    <div class="reward-card">
+      <div class="flex justify-between items-center">
+        <div class="text-lg font-semibold">获得卡牌</div>
+        <div class="flex items-center text-sm text-purple-600">
+          <span>查看图鉴</span>
+          <i class="fas fa-chevron-right ml-1"></i>
+        </div>
+      </div>
+      
+      <div class="card-preview">
+        <div class="card-circles">
+          <svg width="100%" height="100%" viewBox="0 0 200 200">
+            <circle cx="50" cy="50" r="20" fill="white" opacity="0.1" />
+            <circle cx="150" cy="30" r="15" fill="white" opacity="0.1" />
+            <circle cx="100" cy="160" r="25" fill="white" opacity="0.1" />
+          </svg>
+        </div>
+        
+        <div class="card-content">
+          <svg width="40" height="40" viewBox="0 0 40 40">
+            <path d="M20 5C30 15 35 20 35 25C35 30 30 35 20 35C10 35 5 30 5 25C5 20 10 15 20 5Z" fill="white" opacity="0.9"/>
+          </svg>
+          <div class="card-name">肝郁气滞</div>
+          <div class="card-type">稀有</div>
+        </div>
+      </div>
+      
+      <div class="text-center text-sm text-gray-600">
+        <i class="fas fa-info-circle mr-1"></i>
+        您已收集了4/12张肝气卡牌
+      </div>
+    </div>
+    
+    <div class="card mb-6">
+      <h3 class="text-lg font-semibold mb-4">健康建议</h3>
+      
+      <div class="recommendation-item">
+        <div class="rec-icon">
+          <i class="fas fa-leaf"></i>
+        </div>
+        <div>
+          <div class="font-medium mb-1">多饮菊花茶</div>
+          <div class="text-sm text-gray-600">菊花具有清肝明目的功效，有助于缓解肝气郁结</div>
+        </div>
+      </div>
+      
+      <div class="recommendation-item">
+        <div class="rec-icon">
+          <i class="fas fa-running"></i>
+        </div>
+        <div>
+          <div class="font-medium mb-1">适量运动</div>
+          <div class="text-sm text-gray-600">每天30分钟中等强度运动有助于肝气流通</div>
+        </div>
+      </div>
+      
+      <div class="recommendation-item">
+        <div class="rec-icon">
+          <i class="fas fa-bed"></i>
+        </div>
+        <div>
+          <div class="font-medium mb-1">规律作息</div>
+          <div class="text-sm text-gray-600">23点前入睡，避免肝胆经气血循环受阻</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex space-x-4">
+      <button class="btn-outline flex-1" onclick="window.location.href='question.html'">
+        <i class="fas fa-redo mr-2"></i>重新评估
+      </button>
+      <button class="btn-primary flex-1" onclick="window.location.href='levels.html'">
+        继续下一关
+      </button>
+    </div>
+  </div>
+  
+  <div class="tab-bar">
+    <div class="tab-item">
+      <i class="tab-icon fas fa-home"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item active">
+      <i class="tab-icon fas fa-map-marked-alt"></i>
+      <span>关卡</span>
+    </div>
+    <div class="tab-item">
+      <i class="tab-icon fas fa-book"></i>
+      <span>图鉴</span>
+    </div>
+    <div class="tab-item">
+      <i class="tab-icon fas fa-shopping-bag"></i>
+      <span>商店</span>
+    </div>
+    <div class="tab-item">
+      <i class="tab-icon fas fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+</body>
+</html>
